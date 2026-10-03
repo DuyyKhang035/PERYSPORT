@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --navy-primary: #10243A;
+    --navy-dark: #0A1828;
+    --navy-light: #1E3A5F;
+    --orange-accent: #F97316;
+    --orange-hover: #EA580C;
+    --bg-main: #FFFFFF;
+    --bg-secondary: #F5F7FA;
+    --text-primary: #0F172A;
+    --text-secondary: #64748B;
+    --border-color: #E2E8F0;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Custom UI Utilities */
+.bg-navy {
+  background-color: #10243A;
+}
+
+.text-navy {
+  color: #10243A;
+}
+
+.border-navy {
+  border-color: #10243A;
+}
+
+.bg-orange-accent {
+  background-color: #F97316;
+}
+
+.text-orange-accent {
+  color: #F97316;
+}
+
+.hover\:bg-orange-accent:hover {
+  background-color: #F97316;
+}
+
+.hover\:bg-orange-hover:hover {
+  background-color: #EA580C;
+}
+
+.bg-secondary {
+  background-color: #F5F7FA;
+}
+
+/* Line Clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
