@@ -41,8 +41,12 @@ export async function GET(req) {
         filter.brand = brandParam;
       } else {
         const foundBrand = await Brand.findOne({ slug: brandParam });
-        if (foundBrand) filter.brand = foundBrand._id;
-        else filter.brand = null;
+        if (foundBrand) {
+          filter.brand = foundBrand._id;
+        } else {
+          // Slug not found → return empty result set
+          return NextResponse.json({ success: true, data: [], pagination: { total: 0, page, limit, totalPages: 0 } });
+        }
       }
     }
 
@@ -51,8 +55,12 @@ export async function GET(req) {
         filter.categories = categoryParam;
       } else {
         const foundCat = await Category.findOne({ slug: categoryParam });
-        if (foundCat) filter.categories = foundCat._id;
-        else filter.categories = null;
+        if (foundCat) {
+          filter.categories = foundCat._id;
+        } else {
+          // Slug not found → return empty result set
+          return NextResponse.json({ success: true, data: [], pagination: { total: 0, page, limit, totalPages: 0 } });
+        }
       }
     }
 

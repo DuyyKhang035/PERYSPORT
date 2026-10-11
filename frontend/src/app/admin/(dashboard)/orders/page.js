@@ -71,13 +71,17 @@ export default function AdminOrdersPage() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'pending':
-        return <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Mới / Chờ xác nhận</span>;
+        return <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Chờ xác nhận</span>;
       case 'confirmed':
         return <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đã xác nhận</span>;
+      case 'preparing':
+        return <span className="bg-purple-100 text-purple-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đang chuẩn bị hàng</span>;
       case 'shipping':
         return <span className="bg-orange-100 text-orange-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đang giao hàng</span>;
+      case 'delivered':
+        return <span className="bg-teal-100 text-teal-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đã giao hàng</span>;
       case 'completed':
-        return <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Hoàn thành</span>;
+        return <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đã hoàn thành</span>;
       case 'cancelled':
         return <span className="bg-red-100 text-red-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đã hủy</span>;
       default:
@@ -113,7 +117,7 @@ export default function AdminOrdersPage() {
 
         <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
           <span className="font-bold text-slate-500 shrink-0">Trạng thái:</span>
-          {['all', 'pending', 'confirmed', 'shipping', 'completed', 'cancelled'].map((st) => (
+          {['all', 'pending', 'confirmed', 'preparing', 'shipping', 'delivered', 'completed', 'cancelled'].map((st) => (
             <button
               key={st}
               onClick={() => { setStatusFilter(st); setPage(1); }}
@@ -127,8 +131,10 @@ export default function AdminOrdersPage() {
                 all: 'Tất cả',
                 pending: 'Chờ xác nhận',
                 confirmed: 'Đã xác nhận',
-                shipping: 'Đang giao',
-                completed: 'Hoàn thành',
+                preparing: 'Đang chuẩn bị hàng',
+                shipping: 'Đang giao hàng',
+                delivered: 'Đã giao hàng',
+                completed: 'Đã hoàn thành',
                 cancelled: 'Đã hủy',
               }[st]}
             </button>
@@ -202,11 +208,13 @@ export default function AdminOrdersPage() {
               <label className="font-bold text-slate-800 block">Cập Nhật Trạng Thái Đơn Hàng:</label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { key: 'pending', label: 'Mới' },
-                  { key: 'confirmed', label: 'Xác Nhận' },
-                  { key: 'shipping', label: 'Đang Giao' },
-                  { key: 'completed', label: 'Hoàn Thành' },
-                  { key: 'cancelled', label: 'Hủy Đơn (Hoàn Kho)' },
+                  { key: 'pending',   label: 'Chờ Xác Nhận' },
+                  { key: 'confirmed', label: 'Đã Xác Nhận' },
+                  { key: 'preparing', label: 'Đang Chuẩn Bị Hàng' },
+                  { key: 'shipping',  label: 'Đang Giao Hàng' },
+                  { key: 'delivered', label: 'Đã Giao Hàng' },
+                  { key: 'completed', label: 'Đã Hoàn Thành' },
+                  { key: 'cancelled', label: 'Đã Hủy (Hoàn Kho)' },
                 ].map((st) => (
                   <button
                     key={st.key}

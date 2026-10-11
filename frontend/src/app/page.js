@@ -7,7 +7,8 @@ import ProductCard from '@/components/store/ProductCard';
 import ValueCommitments from '@/components/store/ValueCommitments';
 import CartDrawer from '@/components/store/CartDrawer';
 import NewsletterForm from '@/components/store/NewsletterForm';
-import CategoryCarousel from '@/components/store/CategoryCarousel';
+import CategoryShowcase from '@/components/store/CategoryShowcase';
+import BrandShowcase from '@/components/store/BrandShowcase';
 import { fetchBackend } from '@/lib/server-api';
 import { formatDate } from '@/lib/utils';
 import { ArrowRight, Flame, Sparkles, ChevronRight, Tag } from 'lucide-react';
@@ -46,22 +47,8 @@ export default async function HomePage() {
         {/* Hero Slider */}
         <HeroBanner initialBanners={banners} />
 
-        {/* Categories Showcase — Carousel */}
-        <section className="py-12 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-2xl font-black text-[#10243A]">Dòng Giày Theo Chức Năng</h2>
-                <p className="text-xs text-slate-500 mt-1">Lựa chọn chuyên biệt cho từng môn thể thao</p>
-              </div>
-              <Link href="/products" className="text-xs font-bold text-[#F97316] hover:underline flex items-center gap-1">
-                Xem tất cả <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            <CategoryCarousel categories={categories} />
-          </div>
-        </section>
+        {/* Categories Showcase — tabs + carousel */}
+        <CategoryShowcase categories={categories} />
 
         {/* Hot Deals Section */}
         {hotDeals.length > 0 && (
@@ -117,36 +104,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Brands Section — PERY SPORT showcase */}
-        <section className="py-14 bg-[#F5F7FA]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-2xl font-black text-[#10243A] mb-2">Thương Hiệu Nổi Bật</h2>
-            <p className="text-xs text-slate-500 mb-10">Sản phẩm chính hãng từ thương hiệu giày thể thao hàng đầu</p>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 items-center">
-              {[
-                { label: 'Tất Cả Sản Phẩm', href: '/products' },
-                { label: 'Bán Chạy Nhất', href: '/products?sort=best-selling' },
-                { label: 'Hot Deals', href: '/products?hotDeal=true' },
-                { label: 'Sản Phẩm Mới', href: '/products?sort=newest' },
-                { label: 'Giảm Giá Nhiều', href: '/products?sort=discount-desc' },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-[#F97316] transition-all flex flex-col items-center justify-center gap-3 group"
-                >
-                  <div className="h-12 w-auto overflow-hidden flex items-center justify-center">
-                    <img src="/logoThay2.png" alt="PERY SPORT" className="h-full w-auto object-contain" />
-                  </div>
-                  <span className="text-xs font-extrabold text-[#10243A] group-hover:text-[#F97316] transition-colors tracking-wide text-center">
-                    {item.label}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Brands Showcase — tabs + sản phẩm theo thương hiệu */}
+        <BrandShowcase brands={brands} />
 
         {/* Value Commitments */}
         <ValueCommitments />

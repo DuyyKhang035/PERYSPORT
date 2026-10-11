@@ -88,9 +88,13 @@ export default function Header() {
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
-          <Link href="/" className="flex items-center shrink-0">
-            <div className="h-10 w-auto overflow-hidden shrink-0">
-              <img src="/logoThay2.png" alt="PERY SPORT" className="h-full w-auto object-contain" />
+          <Link href="/" className="flex items-center shrink-0 group/logo">
+            <div className="h-12 w-auto overflow-hidden shrink-0">
+              <img
+                src="/logoThay2.png"
+                alt="PERY SPORT"
+                className="h-full w-auto object-contain transition-transform duration-300 group-hover/logo:scale-105"
+              />
             </div>
           </Link>
         </div>
@@ -151,14 +155,14 @@ export default function Header() {
                     <Link
                       key={brand._id}
                       href={`/products?brand=${brand.slug}`}
-                      className="flex items-center gap-3 px-3 py-2 text-slate-700 hover:bg-[#F5F7FA] hover:text-[#F97316] rounded-xl text-xs font-bold transition-colors group/brand"
+                      className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:bg-orange-50 hover:text-[#F97316] rounded-xl text-xs font-bold transition-all group/brand"
                     >
-                      <div className="w-7 h-7 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center p-0.5">
-                        {brand.logo ? (
-                          <img src={brand.logo} alt={brand.name} className="w-full h-full object-cover rounded-md" />
-                        ) : (
-                          <img src="/logoThay2.png" alt="PERY SPORT" className="w-full h-full object-cover rounded-md" />
-                        )}
+                      <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200 group-hover/brand:border-[#F97316]/40 overflow-hidden shrink-0 flex items-center justify-center p-1 transition-all shadow-xs">
+                        <img
+                          src={brand.logo || '/logoThay2.png'}
+                          alt={brand.name}
+                          className="w-full h-full object-contain filter grayscale group-hover/brand:grayscale-0 transition-all duration-300"
+                        />
                       </div>
                       <span className="truncate">{brand.name}</span>
                     </Link>

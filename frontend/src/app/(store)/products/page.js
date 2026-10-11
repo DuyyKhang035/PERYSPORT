@@ -28,13 +28,26 @@ function ProductCatalogContent() {
   const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
   const [selectedColor, setSelectedColor] = useState(searchParams.get('color') || '');
   const [selectedSize, setSelectedSize] = useState(searchParams.get('size') || '');
-  const [inStock, setInStock] = useState(searchParams.get('inStock') === 'true');
-  const [hotDeal, setHotDeal] = useState(searchParams.get('hotDeal') === 'true');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [sortOption, setSortOption] = useState(searchParams.get('sort') || 'newest');
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1', 10));
 
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  // Sync filter states when URL searchParams change (e.g. clicking header nav links)
+  // Use searchParams.toString() as dep — the object reference may stay the same across navigations
+  useEffect(() => {
+    setSelectedBrand(searchParams.get('brand') || '');
+    setSelectedCategory(searchParams.get('category') || '');
+    setMinPrice(searchParams.get('minPrice') || '');
+    setMaxPrice(searchParams.get('maxPrice') || '');
+    setSelectedColor(searchParams.get('color') || '');
+    setSelectedSize(searchParams.get('size') || '');
+    setSearchQuery(searchParams.get('search') || '');
+    setSortOption(searchParams.get('sort') || 'newest');
+    setCurrentPage(parseInt(searchParams.get('page') || '1', 10));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.toString()]);
 
   // Fetch filter metadata
   useEffect(() => {
@@ -68,8 +81,6 @@ function ProductCatalogContent() {
         if (maxPrice) params.append('maxPrice', maxPrice);
         if (selectedColor) params.append('color', selectedColor);
         if (selectedSize) params.append('size', selectedSize);
-        if (inStock) params.append('inStock', 'true');
-        if (hotDeal) params.append('hotDeal', 'true');
         if (searchQuery) params.append('search', searchQuery);
         if (sortOption) params.append('sort', sortOption);
         params.append('page', currentPage.toString());
@@ -90,7 +101,7 @@ function ProductCatalogContent() {
     }
 
     fetchProducts();
-  }, [selectedBrand, selectedCategory, minPrice, maxPrice, selectedColor, selectedSize, inStock, hotDeal, searchQuery, sortOption, currentPage]);
+  }, [selectedBrand, selectedCategory, minPrice, maxPrice, selectedColor, selectedSize, searchQuery, sortOption, currentPage]);
 
   const resetFilters = () => {
     setSelectedBrand('');
@@ -99,8 +110,6 @@ function ProductCatalogContent() {
     setMaxPrice('');
     setSelectedColor('');
     setSelectedSize('');
-    setInStock(false);
-    setHotDeal(false);
     setSearchQuery('');
     setSortOption('newest');
     setCurrentPage(1);
@@ -139,11 +148,9 @@ function ProductCatalogContent() {
               className="bg-white border border-slate-200 text-xs font-semibold text-slate-800 rounded-xl px-3 py-2 focus:outline-none focus:border-[#10243A]"
             >
               <option value="newest">Mới nhất</option>
-              <option value="discount-desc">Giảm giá nhiều nhất</option>
-              <option value="price-asc">Giá: Thấp đến Cao</option>
-              <option value="price-desc">Giá: Cao đến Thấp</option>
+              <option value="price-asc">Khuyến mãi: Thấp đến Cao</option>
+              <option value="price-desc">Khuyến mãi: Cao đến Thấp</option>
               <option value="best-selling">Bán chạy nhất</option>
-              <option value="featured">Nổi bật</option>
             </select>
           </div>
         </div>
@@ -269,27 +276,6 @@ function ProductCatalogContent() {
             </div>
           </div>
 
-          {/* Toggle Switches */}
-          <div className="space-y-3 pt-2">
-            <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={inStock}
-                onChange={(e) => { setInStock(e.target.checked); setCurrentPage(1); }}
-                className="w-4 h-4 accent-[#F97316] rounded-xs"
-              />
-              Chỉ hiện sản phẩm còn hàng
-            </label>
-            <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={hotDeal}
-                onChange={(e) => { setHotDeal(e.target.checked); setCurrentPage(1); }}
-                className="w-4 h-4 accent-[#F97316] rounded-xs"
-              />
-              🔥 Đang có Hot Deals Khuyến mãi
-            </label>
-          </div>
         </aside>
 
         {/* Product Grid Area */}

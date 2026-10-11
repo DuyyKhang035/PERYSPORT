@@ -10,8 +10,12 @@ export default function Footer() {
           
           {/* Brand Col */}
           <div className="space-y-4">
-            <div className="h-10 w-auto overflow-hidden shrink-0">
-              <img src="/logoThay2.png" alt="PERY SPORT" className="h-full w-auto object-contain" />
+            <div className="h-14 w-auto overflow-hidden shrink-0 group/logo cursor-pointer">
+              <img
+                src="/logoThay2.png"
+                alt="PERY SPORT"
+                className="h-full w-auto object-contain transition-transform duration-300 group-hover/logo:scale-105"
+              />
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
               Thương hiệu giày thể thao nam hàng đầu. Chúng tôi cam kết mang tới cho Quý khách những sản phẩm chất lượng cao, thiết kế tối giản, hiện đại và êm ái cho mọi hành trình.
