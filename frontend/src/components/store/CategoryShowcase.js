@@ -79,7 +79,7 @@ export default function CategoryShowcase({ categories = [] }) {
 
 
         {/* Header */}
-        <div className="text-center mb-6">
+        <div className="text-left mb-6">
           <h2 className="text-2xl font-black text-[#10243A]">Dòng Giày Theo Chức Năng</h2>
           <p className="text-xs text-slate-500 mt-1">Lựa chọn chuyên biệt cho từng môn thể thao</p>
           <Link href={viewAllHref} className="text-xs font-bold text-[#F97316] hover:underline inline-flex items-center gap-1 mt-2">

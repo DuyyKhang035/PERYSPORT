@@ -8,6 +8,7 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [paymentFilter, setPaymentFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
@@ -20,6 +21,7 @@ export default function AdminOrdersPage() {
     try {
       const params = new URLSearchParams();
       if (statusFilter !== 'all') params.append('status', statusFilter);
+      if (paymentFilter !== 'all') params.append('paymentStatus', paymentFilter);
       if (search) params.append('search', search);
       params.append('page', page.toString());
       params.append('limit', '15');
@@ -39,7 +41,7 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     fetchOrders();
-  }, [statusFilter, search, page]);
+  }, [statusFilter, paymentFilter, search, page]);
 
   const showToast = (msg) => {
     setToast(msg);
@@ -97,27 +99,32 @@ export default function AdminOrdersPage() {
         </div>
       )}
 
-      <div>
-        <h1 className="text-2xl font-black text-[#10243A]">Quản Lý Đơn Hàng</h1>
-        <p className="text-xs text-slate-500 mt-1">Danh sách đơn hàng, cập nhật tiến độ giao hàng và tra cứu snapshot</p>
-      </div>
-
-      {/* Filters & Search */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <Search className="w-4 h-4 text-slate-400" />
+      {/* Search — căn giữa, trên tiêu đề */}
+      <div className="flex justify-center">
+        <div className="flex items-center gap-2 w-full max-w-md bg-white border border-slate-200 rounded-2xl px-4 py-2.5 shadow-xs text-xs">
+          <Search className="w-4 h-4 text-slate-400 shrink-0" />
           <input
             type="text"
             placeholder="Tìm theo Mã đơn, Tên KH, SĐT..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-64 bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:bg-white"
+            className="flex-1 bg-transparent focus:outline-none text-slate-700 placeholder:text-slate-400"
           />
         </div>
+      </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-          <span className="font-bold text-slate-500 shrink-0">Trạng thái:</span>
-          {['all', 'pending', 'confirmed', 'preparing', 'shipping', 'delivered', 'completed', 'cancelled'].map((st) => (
+      <div>
+        <h1 className="text-2xl font-black text-[#10243A]">Quản Lý Đơn Hàng</h1>
+        <p className="text-xs text-slate-500 mt-1">Danh sách đơn hàng, cập nhật tiến độ giao hàng và tra cứu snapshot</p>
+      </div>
+
+      {/* Filter row: Trạng thái đơn + Trạng thái thanh toán */}
+      <div className="flex flex-col lg:flex-row gap-3 text-xs">
+
+        {/* Trạng thái đơn hàng */}
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 flex items-center gap-2 flex-wrap overflow-x-auto flex-1">
+          <span className="font-bold text-slate-500 shrink-0">Trạng thái đơn:</span>
+          {['all', 'pending', 'preparing', 'shipping', 'delivered', 'completed', 'cancelled'].map((st) => (
             <button
               key={st}
               onClick={() => { setStatusFilter(st); setPage(1); }}
@@ -130,16 +137,38 @@ export default function AdminOrdersPage() {
               {{
                 all: 'Tất cả',
                 pending: 'Chờ xác nhận',
-                confirmed: 'Đã xác nhận',
-                preparing: 'Đang chuẩn bị hàng',
-                shipping: 'Đang giao hàng',
-                delivered: 'Đã giao hàng',
-                completed: 'Đã hoàn thành',
-                cancelled: 'Đã hủy',
+                preparing: 'Chuẩn bị hàng',
+                shipping: 'Giao hàng',
+                delivered: 'Giao hàng xong',
+                completed: 'Hoàn thành',
+                cancelled: 'Hủy',
               }[st]}
             </button>
           ))}
         </div>
+
+        {/* Trạng thái thanh toán */}
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 flex items-center gap-2 flex-wrap shrink-0">
+          <span className="font-bold text-slate-500 shrink-0">Thanh toán:</span>
+          {['all', 'paid', 'unpaid'].map((pt) => (
+            <button
+              key={pt}
+              onClick={() => { setPaymentFilter(pt); setPage(1); }}
+              className={`px-3 py-1.5 rounded-xl font-bold transition-colors shrink-0 ${
+                paymentFilter === pt
+                  ? pt === 'paid'
+                    ? 'bg-emerald-600 text-white'
+                    : pt === 'unpaid'
+                    ? 'bg-red-500 text-white'
+                    : 'bg-[#10243A] text-white'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              {{ all: 'Tất cả', paid: 'Đã thanh toán', unpaid: 'Chưa thanh toán' }[pt]}
+            </button>
+          ))}
+        </div>
+
       </div>
 
       {/* Orders Table */}

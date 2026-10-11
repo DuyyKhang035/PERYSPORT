@@ -67,24 +67,17 @@ export default function HeroBanner({ initialBanners = [] }) {
           <div className="absolute inset-0 bg-gradient-to-r from-[#10243A]/60 via-[#10243A]/30 to-transparent" />
         </div>
 
+
         {/* Subtle click hint */}
         <div className="absolute bottom-6 right-6 z-10 flex items-center gap-2 text-white/40 text-xs font-semibold pointer-events-none">
           <span className="w-2 h-2 rounded-full bg-[#F97316]/70 animate-pulse inline-block" />
           Click để khám phá
         </div>
 
-        {/* Progress dots */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex gap-1.5 pointer-events-none">
-          {routes.map((_, i) => (
-            <span
-              key={i}
-              className={`block rounded-full transition-all duration-300 ${
-                i === currentIndex
-                  ? 'w-5 h-1.5 bg-[#F97316]'
-                  : 'w-1.5 h-1.5 bg-white/30'
-              }`}
-            />
-          ))}
+        {/* Progress dots — chỉ 2 chấm */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex gap-2 pointer-events-none">
+          <span className="block w-5 h-1.5 rounded-full bg-[#F97316]" />
+          <span className="block w-1.5 h-1.5 rounded-full bg-white/30" />
         </div>
 
       </div>
