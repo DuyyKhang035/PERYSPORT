@@ -6,6 +6,11 @@ import { getAdminSession } from '@/lib/auth';
 
 export async function GET(req, { params }) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ success: false, message: 'Không có quyền truy cập' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const { id } = await params;
     const order = await Order.findById(id);

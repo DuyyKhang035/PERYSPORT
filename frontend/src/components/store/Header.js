@@ -15,7 +15,17 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
+  const [userName, setUserName] = useState('');
   const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) setUserName(d.user.fullName || d.user.email);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function loadNavData() {
@@ -65,11 +75,8 @@ export default function Header() {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/lookup" className="hover:text-[#F97316] transition-colors flex items-center gap-1">
-              <Search className="w-3 h-3" /> Tra cứu đơn hàng
-            </Link>
-            <Link href="/admin/login" className="hover:text-[#F97316] transition-colors flex items-center gap-1">
-              <User className="w-3 h-3" /> Quản trị Admin
+            <Link href="/profile" className="hover:text-[#F97316] transition-colors flex items-center gap-1">
+              <User className="w-3 h-3" /> {userName || 'Tài khoản'}
             </Link>
           </div>
         </div>
@@ -334,11 +341,8 @@ export default function Header() {
                 <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="block py-1 hover:text-[#F97316]">
                   Liên Hệ
                 </Link>
-                <Link href="/lookup" onClick={() => setMobileMenuOpen(false)} className="block py-1 hover:text-[#F97316]">
-                  Tra Cứu Đơn Hàng
-                </Link>
-                <Link href="/admin/login" onClick={() => setMobileMenuOpen(false)} className="block py-1 hover:text-[#F97316]">
-                  Quản Trị Admin
+                <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="block py-1 hover:text-[#F97316]">
+                  {userName || 'Tài khoản'}
                 </Link>
               </div>
             </nav>

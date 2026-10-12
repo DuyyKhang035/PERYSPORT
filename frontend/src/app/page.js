@@ -4,7 +4,6 @@ import Header from '@/components/store/Header';
 import Footer from '@/components/store/Footer';
 import HeroBanner from '@/components/store/HeroBanner';
 import ProductCard from '@/components/store/ProductCard';
-import ValueCommitments from '@/components/store/ValueCommitments';
 import CartDrawer from '@/components/store/CartDrawer';
 import NewsletterForm from '@/components/store/NewsletterForm';
 import CategoryShowcase from '@/components/store/CategoryShowcase';
@@ -19,7 +18,7 @@ async function getHomepageData() {
   const [bannerResponse, topSellingResponse, hotDealsResponse, brandResponse, categoryResponse, postResponse] = await Promise.all([
     fetchBackend('/api/banners?active=true'),
     fetchBackend('/api/products?sort=best-selling&limit=8'),
-    fetchBackend('/api/products?hotDeal=true&limit=8'),
+    fetchBackend('/api/products?hotDeal=true&sort=discount-desc&limit=8'),
     fetchBackend('/api/brands?active=true&homepage=true'),
     fetchBackend('/api/categories?active=true'),
     fetchBackend('/api/posts?status=published&limit=3'),
@@ -54,16 +53,11 @@ export default async function HomePage() {
         {hotDeals.length > 0 && (
           <section className="py-14 bg-gradient-to-b from-[#10243A] to-[#0A1828] text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-slate-800 mb-8 gap-4">
-                <div>
-                  <span className="inline-flex items-center gap-1 bg-[#F97316] text-white text-xs font-black uppercase px-3 py-1 rounded-full mb-2">
-                    <Flame className="w-3.5 h-3.5 fill-white" /> Giới Hạn Thời Gian
-                  </span>
-                  <h2 className="text-2xl md:text-3xl font-black text-white">Siêu Sale Hot Deals</h2>
-                </div>
+              <div className="flex items-center justify-between pb-6 border-b border-slate-800 mb-8">
+                <h2 className="text-2xl md:text-3xl font-black text-white">Siêu Sale Hot Deals</h2>
                 <Link
                   href="/products"
-                  className="inline-flex items-center gap-1 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-bold px-5 py-2.5 rounded-full transition-colors self-start md:self-auto"
+                  className="inline-flex items-center gap-1 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-bold px-5 py-2.5 rounded-full transition-colors"
                 >
                   Xem thêm <ArrowRight className="w-4 h-4" />
                 </Link>
@@ -106,9 +100,6 @@ export default async function HomePage() {
 
         {/* Brands Showcase — tabs + sản phẩm theo thương hiệu */}
         <BrandShowcase brands={brands} />
-
-        {/* Value Commitments */}
-        <ValueCommitments />
 
         {/* Latest Articles */}
         {posts.length > 0 && (

@@ -153,7 +153,7 @@ export default function CheckoutPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Nguyễn Văn A"
+                    placeholder=""
                     value={formData.customerName}
                     onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
                     className="w-full bg-white border border-slate-200 text-xs rounded-xl p-3 focus:outline-none focus:border-[#10243A]"
@@ -167,7 +167,7 @@ export default function CheckoutPage() {
                   <input
                     type="tel"
                     required
-                    placeholder="0988 123 456"
+                    placeholder=""
                     value={formData.customerPhone}
                     onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
                     className="w-full bg-white border border-slate-200 text-xs rounded-xl p-3 focus:outline-none focus:border-[#10243A]"
@@ -182,7 +182,7 @@ export default function CheckoutPage() {
                 <input
                   type="email"
                   required
-                  placeholder="nguyenvana@gmail.com"
+                  placeholder=""
                   value={formData.customerEmail}
                   onChange={(e) => setFormData({ ...formData, customerEmail: e.target.value })}
                   className="w-full bg-white border border-slate-200 text-xs rounded-xl p-3 focus:outline-none focus:border-[#10243A]"
