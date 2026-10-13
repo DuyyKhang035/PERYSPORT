@@ -1,5 +1,5 @@
 import './globals.css';
-import { CartProvider } from '@/lib/cart-context';
+import { CartProvider } from '@/lib/ngu-canh-gio-hang';
 
 export const metadata = {
   title: 'PERY SPORT | Giày Thể Thao Nam Cao Cấp',

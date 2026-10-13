@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import User from '@/lib/models/User';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import User from '@/lib/models/NguoiDung';
 import bcrypt from 'bcryptjs';
-import { getUserSession } from '@/lib/auth';
+import { getUserSession } from '@/lib/xac-thuc';
 
 // GET /api/auth/profile — lấy profile user hiện tại
 export async function GET() {

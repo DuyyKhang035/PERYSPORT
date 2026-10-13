@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import Product from '@/lib/models/Product';
-import Promotion from '@/lib/models/Promotion';
-import { calculateDiscount } from '@/lib/utils';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import Product from '@/lib/models/SanPham';
+import Promotion from '@/lib/models/KhuyenMai';
+import { calculateDiscount } from '@/lib/tien-ich';
 
 export async function POST(req) {
   try {

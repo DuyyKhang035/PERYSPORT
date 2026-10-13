@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import Admin from '@/lib/models/Admin';
-import User from '@/lib/models/User';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import Admin from '@/lib/models/QuanTri';
+import User from '@/lib/models/NguoiDung';
 import bcrypt from 'bcryptjs';
-import { signAdminToken, setAdminSessionCookie, signUserToken, setUserSessionCookie } from '@/lib/auth';
+import { signAdminToken, setAdminSessionCookie, signUserToken, setUserSessionCookie } from '@/lib/xac-thuc';
 
 export async function POST(req) {
   try {
@@ -34,7 +34,7 @@ export async function POST(req) {
       return NextResponse.json({
         success: true,
         role: 'admin',
-        redirect: '/admin',
+        redirect: '/quan-tri',
         user: { id: admin._id, name: admin.name, role: 'admin' },
       });
     }
@@ -68,7 +68,7 @@ export async function POST(req) {
     return NextResponse.json({
       success: true,
       role: 'user',
-      redirect: '/profile',
+      redirect: '/tai-khoan',
       user: {
         id: user._id,
         email: user.email,

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import Banner from '@/lib/models/Banner';
-import { getAdminSession } from '@/lib/auth';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import Banner from '@/lib/models/BannerQuangCao';
+import { getAdminSession } from '@/lib/xac-thuc';
 
 export async function PUT(req, { params }) {
   try {

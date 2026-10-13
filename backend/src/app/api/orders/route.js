@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import Order from '@/lib/models/Order';
-import Product from '@/lib/models/Product';
-import { getAdminSession } from '@/lib/auth';
-import { generateOrderCode, calculateDiscount } from '@/lib/utils';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import Order from '@/lib/models/DonHang';
+import Product from '@/lib/models/SanPham';
+import { getAdminSession } from '@/lib/xac-thuc';
+import { generateOrderCode, calculateDiscount } from '@/lib/tien-ich';
 
 export async function GET(req) {
   try {

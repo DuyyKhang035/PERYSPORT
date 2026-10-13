@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import Banner from '@/lib/models/Banner';
-import { getAdminSession } from '@/lib/auth';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import Banner from '@/lib/models/BannerQuangCao';
+import { getAdminSession } from '@/lib/xac-thuc';
 
 export async function GET(req) {
   try {
@@ -39,7 +39,7 @@ export async function POST(req) {
       desktopImage: body.desktopImage,
       mobileImage: body.mobileImage || body.desktopImage,
       ctaText: body.ctaText || 'Khám Phá Ngay',
-      ctaLink: body.ctaLink || '/products',
+      ctaLink: body.ctaLink || '/san-pham',
       displayOrder: body.displayOrder || 0,
       isActive: body.isActive !== undefined ? body.isActive : true,
     });

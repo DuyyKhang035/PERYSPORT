@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import Product from '@/lib/models/Product';
-import Brand from '@/lib/models/Brand';
-import Category from '@/lib/models/Category';
-import Promotion from '@/lib/models/Promotion';
-import { getAdminSession } from '@/lib/auth';
-import { slugify, calculateDiscount } from '@/lib/utils';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import Product from '@/lib/models/SanPham';
+import Brand from '@/lib/models/ThuongHieu';
+import Category from '@/lib/models/DanhMuc';
+import Promotion from '@/lib/models/KhuyenMai';
+import { getAdminSession } from '@/lib/xac-thuc';
+import { slugify, calculateDiscount } from '@/lib/tien-ich';
 
 export async function GET(req) {
   try {

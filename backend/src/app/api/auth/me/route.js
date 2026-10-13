@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import User from '@/lib/models/User';
-import { getUserSession, clearUserSessionCookie } from '@/lib/auth';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import User from '@/lib/models/NguoiDung';
+import { getUserSession, clearUserSessionCookie } from '@/lib/xac-thuc';
 
 export async function GET() {
   try {
@@ -14,7 +14,7 @@ export async function GET() {
     await connectToDatabase();
     const user = await User.findById(session.id).select('-password').lean();
 
-    // Xóa cookie lỗi thời để proxy không đẩy /login ↔ /profile vô hạn
+    // Xóa cookie lỗi thời để proxy không đẩy /dang-nhap ↔ /tai-khoan vô hạn
     if (!user) {
       await clearUserSessionCookie();
       return NextResponse.json({ success: false, message: 'Tài khoản không tồn tại' }, { status: 404 });

@@ -1,4 +1,4 @@
-import { fetchBackend } from '@/lib/server-api';
+import { fetchBackend } from '@/lib/api-may-chu';
 
 export default async function sitemap() {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
@@ -18,21 +18,21 @@ export default async function sitemap() {
   }
 
   const productUrls = products.map((p) => ({
-    url: `${baseUrl}/products/${p.slug}`,
+    url: `${baseUrl}/san-pham/${p.slug}`,
     lastModified: p.updatedAt || new Date(),
   }));
 
   const postUrls = posts.map((post) => ({
-    url: `${baseUrl}/blogs/${post.slug}`,
+    url: `${baseUrl}/tin-tuc/${post.slug}`,
     lastModified: post.updatedAt || new Date(),
   }));
 
   return [
     { url: baseUrl, lastModified: new Date() },
-    { url: `${baseUrl}/products`, lastModified: new Date() },
-    { url: `${baseUrl}/brands`, lastModified: new Date() },
-    { url: `${baseUrl}/blogs`, lastModified: new Date() },
-    { url: `${baseUrl}/contact`, lastModified: new Date() },
+    { url: `${baseUrl}/san-pham`, lastModified: new Date() },
+    { url: `${baseUrl}/thuong-hieu`, lastModified: new Date() },
+    { url: `${baseUrl}/tin-tuc`, lastModified: new Date() },
+    { url: `${baseUrl}/lien-he`, lastModified: new Date() },
     ...productUrls,
     ...postUrls,
   ];

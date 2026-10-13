@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import Post from '@/lib/models/Post';
-import { getAdminSession } from '@/lib/auth';
-import { slugify } from '@/lib/utils';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import Post from '@/lib/models/BaiViet';
+import { getAdminSession } from '@/lib/xac-thuc';
+import { slugify } from '@/lib/tien-ich';
 
 export async function GET(req) {
   try {

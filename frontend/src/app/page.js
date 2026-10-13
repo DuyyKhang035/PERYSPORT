@@ -1,15 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
-import Header from '@/components/store/Header';
-import Footer from '@/components/store/Footer';
-import HeroBanner from '@/components/store/HeroBanner';
-import ProductCard from '@/components/store/ProductCard';
-import CartDrawer from '@/components/store/CartDrawer';
-import NewsletterForm from '@/components/store/NewsletterForm';
-import CategoryShowcase from '@/components/store/CategoryShowcase';
-import BrandShowcase from '@/components/store/BrandShowcase';
-import { fetchBackend } from '@/lib/server-api';
-import { formatDate } from '@/lib/utils';
+import Header from '@/components/cua-hang/bo-cuc/DauTrang';
+import Footer from '@/components/cua-hang/bo-cuc/ChanTrang';
+import HeroBanner from '@/components/cua-hang/trang-chu/BannerChinh';
+import ProductCard from '@/components/cua-hang/san-pham/TheSanPham';
+import CartDrawer from '@/components/cua-hang/gio-hang/NganKeGioHang';
+import NewsletterForm from '@/components/cua-hang/trang-chu/FormDangKyNhanTin';
+import CategoryShowcase from '@/components/cua-hang/trang-chu/TrungBayDanhMuc';
+import BrandShowcase from '@/components/cua-hang/trang-chu/TrungBayThuongHieu';
+import { fetchBackend } from '@/lib/api-may-chu';
+import { formatDate } from '@/lib/tien-ich';
 import { ArrowRight, Flame, Sparkles, ChevronRight, Tag } from 'lucide-react';
 
 export const revalidate = 60; // SSR cache 60 seconds
@@ -56,7 +56,7 @@ export default async function HomePage() {
               <div className="flex items-center justify-between pb-6 border-b border-slate-800 mb-8">
                 <h2 className="text-2xl md:text-3xl font-black text-white">Siêu Sale Hot Deals</h2>
                 <Link
-                  href="/products"
+                  href="/san-pham"
                   className="inline-flex items-center gap-1 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-bold px-5 py-2.5 rounded-full transition-colors"
                 >
                   Xem thêm <ArrowRight className="w-4 h-4" />
@@ -83,7 +83,7 @@ export default async function HomePage() {
                 <h2 className="text-2xl md:text-3xl font-black text-[#10243A]">Sản Phẩm Đang Hot</h2>
               </div>
               <Link
-                href="/products?sort=best-selling"
+                href="/san-pham?sort=best-selling"
                 className="inline-flex items-center gap-1 bg-slate-100 hover:bg-[#10243A] hover:text-white text-slate-800 text-xs font-bold px-5 py-2.5 rounded-full transition-colors"
               >
                 Xem tất cả bán chạy <ArrowRight className="w-4 h-4" />
@@ -110,7 +110,7 @@ export default async function HomePage() {
                   <h2 className="text-2xl font-black text-[#10243A]">Tin Tức & Kính Nghiệm</h2>
                   <p className="text-xs text-slate-500 mt-1">Cập nhật xu hướng và bí quyết chọn giày chuẩn</p>
                 </div>
-                <Link href="/blogs" className="text-xs font-bold text-[#F97316] hover:underline flex items-center gap-1">
+                <Link href="/tin-tuc" className="text-xs font-bold text-[#F97316] hover:underline flex items-center gap-1">
                   Tất cả bài viết <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -118,7 +118,7 @@ export default async function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {posts.map((post) => (
                   <article key={post._id} className="group flex flex-col bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-xs hover:shadow-xl transition-all">
-                    <Link href={`/blogs/${post.slug}`} className="block aspect-16/9 bg-slate-100 overflow-hidden">
+                    <Link href={`/tin-tuc/${post.slug}`} className="block aspect-16/9 bg-slate-100 overflow-hidden">
                       <img
                         src={post.image || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80'}
                         alt={post.title}
@@ -130,7 +130,7 @@ export default async function HomePage() {
                         <span className="text-[11px] text-slate-400 font-bold block mb-2">
                           {formatDate(post.createdAt)}
                         </span>
-                        <Link href={`/blogs/${post.slug}`}>
+                        <Link href={`/tin-tuc/${post.slug}`}>
                           <h3 className="text-base font-bold text-[#10243A] group-hover:text-[#F97316] transition-colors line-clamp-2 leading-snug mb-2">
                             {post.title}
                           </h3>
@@ -139,7 +139,7 @@ export default async function HomePage() {
                           {post.summary}
                         </p>
                       </div>
-                      <Link href={`/blogs/${post.slug}`} className="text-xs font-extrabold text-[#F97316] hover:underline inline-flex items-center gap-1">
+                      <Link href={`/tin-tuc/${post.slug}`} className="text-xs font-extrabold text-[#F97316] hover:underline inline-flex items-center gap-1">
                         Đọc tiếp <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>

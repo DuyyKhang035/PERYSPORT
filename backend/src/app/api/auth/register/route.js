@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import User from '@/lib/models/User';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import User from '@/lib/models/NguoiDung';
 import bcrypt from 'bcryptjs';
 
 // POST /api/auth/register — tạo tài khoản khách hàng mới

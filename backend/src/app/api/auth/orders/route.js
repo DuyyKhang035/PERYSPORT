@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/db';
-import Order from '@/lib/models/Order';
-import User from '@/lib/models/User';
-import { getUserSession } from '@/lib/auth';
+import connectToDatabase from '@/lib/co-so-du-lieu';
+import Order from '@/lib/models/DonHang';
+import User from '@/lib/models/NguoiDung';
+import { getUserSession } from '@/lib/xac-thuc';
 
 // GET /api/auth/orders — lịch sử đơn hàng của chính user đang đăng nhập
 export async function GET() {

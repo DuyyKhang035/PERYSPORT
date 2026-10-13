@@ -8,47 +8,47 @@ export function proxy(request) {
   const userToken = request.cookies.get(USER_COOKIE)?.value;
   const adminToken = request.cookies.get(ADMIN_COOKIE)?.value;
 
-  // ── Trang đăng nhập chung (/login) ─────────────────────────────────────
-  if (pathname === '/login') {
-    if (adminToken) return NextResponse.redirect(new URL('/admin', request.url));
-    if (userToken) return NextResponse.redirect(new URL('/profile', request.url));
+  // ── Trang đăng nhập chung (/dang-nhap) ─────────────────────────────────────
+  if (pathname === '/dang-nhap') {
+    if (adminToken) return NextResponse.redirect(new URL('/quan-tri', request.url));
+    if (userToken) return NextResponse.redirect(new URL('/tai-khoan', request.url));
     return NextResponse.next();
   }
 
-  // ── Trang đăng ký (/register) ──────────────────────────────────────────
-  if (pathname === '/register') {
-    if (userToken) return NextResponse.redirect(new URL('/profile', request.url));
+  // ── Trang đăng ký (/dang-ky) ──────────────────────────────────────────
+  if (pathname === '/dang-ky') {
+    if (userToken) return NextResponse.redirect(new URL('/tai-khoan', request.url));
     return NextResponse.next();
   }
 
-  // ── Trang đăng nhập admin (/admin/login) ───────────────────────────────
-  if (pathname === '/admin/login') {
-    if (adminToken) return NextResponse.redirect(new URL('/admin', request.url));
+  // ── Trang đăng nhập admin (/quan-tri/dang-nhap) ───────────────────────────────
+  if (pathname === '/quan-tri/dang-nhap') {
+    if (adminToken) return NextResponse.redirect(new URL('/quan-tri', request.url));
     return NextResponse.next();
   }
 
-  // ── Bảo vệ trang Admin (trừ /admin/login) ──────────────────────────────
-  if (pathname.startsWith('/admin')) {
+  // ── Bảo vệ trang Admin (trừ /quan-tri/dang-nhap) ──────────────────────────────
+  if (pathname.startsWith('/quan-tri')) {
     if (!adminToken) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
+      return NextResponse.redirect(new URL('/quan-tri/dang-nhap', request.url));
     }
     return NextResponse.next();
   }
 
   // ── Bảo vệ trang Profile ───────────────────────────────────────────────
-  if (pathname.startsWith('/profile')) {
-    if (!userToken) return NextResponse.redirect(new URL('/login', request.url));
+  if (pathname.startsWith('/tai-khoan')) {
+    if (!userToken) return NextResponse.redirect(new URL('/dang-nhap', request.url));
     return NextResponse.next();
   }
 
   // ── Bảo vệ tất cả trang Store & trang chủ ─────────────────────────────
-  const protectedPaths = ['/', '/products', '/brands', '/blogs', '/cart', '/checkout', '/contact', '/lookup', '/order-success'];
+  const protectedPaths = ['/', '/san-pham', '/thuong-hieu', '/tin-tuc', '/gio-hang', '/thanh-toan', '/lien-he', '/tra-cuu', '/dat-hang-thanh-cong'];
   const isProtected = protectedPaths.some(
     (p) => pathname === p || pathname.startsWith(p + '/')
   );
 
   if (isProtected) {
-    if (!userToken) return NextResponse.redirect(new URL('/login', request.url));
+    if (!userToken) return NextResponse.redirect(new URL('/dang-nhap', request.url));
     return NextResponse.next();
   }
 
