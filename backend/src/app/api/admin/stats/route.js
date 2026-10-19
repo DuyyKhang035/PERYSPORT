@@ -20,11 +20,11 @@ export async function GET() {
       Order.countDocuments({}),
     ]);
 
-    // Calculate revenue from completed or confirmed/shipping orders
+    // Include active fulfillment stages and completed orders; exclude pending and cancelled.
     const revenueAggregation = await Order.aggregate([
       {
         $match: {
-          orderStatus: { $in: ['confirmed', 'shipping', 'completed'] },
+          orderStatus: { $in: ['confirmed', 'ready_to_ship', 'shipping', 'delivered', 'completed'] },
         },
       },
       {

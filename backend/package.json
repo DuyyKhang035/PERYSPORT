@@ -6,7 +6,8 @@
     "dev": "next dev -p 4000",
     "build": "next build",
     "start": "next start -p 4000",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "update-images": "node scripts/update-images.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

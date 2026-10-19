@@ -60,11 +60,10 @@ export default function HeroBanner({ initialBanners = [] }) {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/banner.png"
+            src="/Bannermoipng.png"
             alt="PERY SPORT Banner"
-            className="w-full h-full object-cover object-center opacity-60 transition-all duration-700"
+            className="w-full h-full object-cover object-center transition-all duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#10243A]/60 via-[#10243A]/30 to-transparent" />
         </div>
 
 

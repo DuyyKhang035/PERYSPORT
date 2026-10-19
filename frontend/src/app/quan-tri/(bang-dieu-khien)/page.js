@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatVND, formatDateTime } from '@/lib/tien-ich';
 import { Tag, Layers, ShoppingBag, DollarSign, AlertTriangle, ArrowRight, Clock, CheckCircle2, Truck, XCircle } from 'lucide-react';
+import { getOrderStatus } from '@/lib/trang-thai-don-hang';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState(null);
@@ -31,20 +32,14 @@ export default function AdminDashboardPage() {
   }
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case 'pending':
-        return <span className="bg-amber-100 text-amber-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Chờ xác nhận</span>;
-      case 'confirmed':
-        return <span className="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Đã xác nhận</span>;
-      case 'shipping':
-        return <span className="bg-orange-100 text-orange-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Đang giao</span>;
-      case 'completed':
-        return <span className="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Hoàn thành</span>;
-      case 'cancelled':
-        return <span className="bg-red-100 text-red-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full">Đã hủy</span>;
-      default:
-        return status;
-    }
+    const orderStatus = getOrderStatus(status);
+    if (!orderStatus) return status;
+
+    return (
+      <span className={`${orderStatus.badgeClass} text-[11px] font-bold px-2.5 py-0.5 rounded-full`}>
+        {orderStatus.label}
+      </span>
+    );
   };
 
   return (

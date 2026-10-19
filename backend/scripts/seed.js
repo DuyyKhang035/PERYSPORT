@@ -159,6 +159,23 @@ async function seed() {
       'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=800&q=80',
     ];
 
+    const productImages = {
+      'nike-air-zoom-pegasus-40': '/Nike Air Zoom Pegasus 40.jpg',
+      'nike-metcon-9-training': '/Nike Metcon 9 Training.jpg',
+      'nike-jordan-stay-loyal-2': '/Nike Jordan Stay Loyal 2.jpg',
+      'nike-revolution-6-next-nature': '/Nike Revolution 6 Next Nature.jpg',
+      'adidas-ultraboost-light': '/Adidas Ultraboost Light.jpg',
+      'adidas-dropset-2-trainer': '/Adidas Dropset 2 Trainer.jpg',
+      'adidas-forum-low-classic': '/Adidas Forum Low Classic.jpg',
+      'adidas-ownthegame-2-0': '/Adidas OwnTheGame 2.0.jpg',
+      'puma-deviate-nitro-2': '/Puma Deviate Nitro 2.jpg',
+      'puma-fuse-2-0-gym': '/Puma Fuse 2.0 Gym.jpg',
+      'puma-rebound-v6-high': '/Puma Rebound V6 High.jpg',
+      'new-balance-fresh-foam-x-1080v12': '/New Balance Fresh Foam X 1080v12.jpg',
+      'new-balance-574-core-classic': '/New Balance 574 Core Classic.jpg',
+      'new-balance-minimus-tr': '/New Balance Minimus TR.jpg',
+    };
+
     const productsConfig = [
       { name: 'Pery Runner Pro X1', slug: 'pery-runner-pro-x1', brand: peryBrand._id, categories: [catChayBo._id, catThoiTrang._id], basePrice: 1850000, promo: promoHotDeal._id, sold: 142, isFeatured: true, imgIdx: 0 },
       { name: 'Pery Speed Ultra 2', slug: 'pery-speed-ultra-2', brand: peryBrand._id, categories: [catChayBo._id], basePrice: 1650000, promo: null, sold: 98, isFeatured: true, imgIdx: 1 },
@@ -197,9 +214,10 @@ async function seed() {
 
     for (const p of productsConfig) {
       const variants = [];
-      const imgMain = sampleImages[p.imgIdx];
+      const imgMain = productImages[p.slug] || sampleImages[p.imgIdx];
       const imgAlt1 = sampleImages[(p.imgIdx + 1) % sampleImages.length];
       const imgAlt2 = sampleImages[(p.imgIdx + 2) % sampleImages.length];
+      const images = productImages[p.slug] ? [imgMain] : [imgMain, imgAlt1, imgAlt2];
 
       for (let cIdx = 0; cIdx < colors.length; cIdx++) {
         const c = colors[cIdx];
@@ -216,7 +234,7 @@ async function seed() {
             price: p.basePrice,
             originalPrice: Math.round(p.basePrice * 1.15),
             stock: stockVal,
-            image: cIdx === 0 ? imgMain : (cIdx === 1 ? imgAlt1 : imgAlt2),
+            image: productImages[p.slug] || (cIdx === 0 ? imgMain : (cIdx === 1 ? imgAlt1 : imgAlt2)),
           });
         }
       }
@@ -236,7 +254,7 @@ async function seed() {
         brand: p.brand,
         categories: p.categories,
         description: `Giày thể thao nam ${p.name} thuộc thương hiệu uy tín. Thiết kế tối giản, công nghệ đệm êm ái, hỗ trợ vận động tối đa và mang lại phong cách sang trọng, trẻ trung cho quý ông.`,
-        images: [imgMain, imgAlt1, imgAlt2],
+        images,
         variants: variants,
         originalPrice: Math.round(p.basePrice * 1.15),
         salePrice: calculatedSalePrice,

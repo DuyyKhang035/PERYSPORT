@@ -16,13 +16,22 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
 
     const status = searchParams.get('status');
+    const paymentStatus = searchParams.get('paymentStatus');
     const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '15', 10);
 
     const filter = {};
     if (status && status !== 'all') {
-      filter.orderStatus = status;
+      filter.orderStatus = status === 'ready_to_ship'
+        ? { $in: ['ready_to_ship', 'confirmed'] }
+        : status;
+    }
+
+    if (paymentStatus === 'paid') {
+      filter.paymentStatus = 'paid';
+    } else if (paymentStatus === 'unpaid') {
+      filter.paymentStatus = { $ne: 'paid' };
     }
 
     if (search) {
@@ -39,7 +48,7 @@ export async function GET(req) {
     const skip = (page - 1) * limit;
 
     const orders = await Order.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 })
       .skip(skip)
       .limit(limit);
 

@@ -6,7 +6,8 @@ import Header from '@/components/cua-hang/bo-cuc/DauTrang';
 import Footer from '@/components/cua-hang/bo-cuc/ChanTrang';
 import CartDrawer from '@/components/cua-hang/gio-hang/NganKeGioHang';
 import { formatVND, formatDateTime } from '@/lib/tien-ich';
-import { Search, Package, CheckCircle2, Clock, Truck, XCircle, AlertCircle } from 'lucide-react';
+import { Search, AlertCircle } from 'lucide-react';
+import { ORDER_STATUSES, getOrderStatus, normalizeOrderStatus } from '@/lib/trang-thai-don-hang';
 
 function LookupContent() {
   const searchParams = useSearchParams();
@@ -57,20 +58,14 @@ function LookupContent() {
   }, [paramCode, paramContact]);
 
   const getStatusBadge = (status) => {
-    switch (status) {
-      case 'pending':
-        return <span className="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Chờ xác nhận</span>;
-      case 'confirmed':
-        return <span className="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Đã xác nhận</span>;
-      case 'shipping':
-        return <span className="bg-[#F97316]/10 text-[#F97316] text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><Truck className="w-3.5 h-3.5" /> Đang giao hàng</span>;
-      case 'completed':
-        return <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Hoàn thành</span>;
-      case 'cancelled':
-        return <span className="bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"><XCircle className="w-3.5 h-3.5" /> Đã hủy</span>;
-      default:
-        return status;
-    }
+    const orderStatus = getOrderStatus(status);
+    if (!orderStatus) return status;
+
+    return (
+      <span className={`${orderStatus.badgeClass} text-xs font-bold px-3 py-1 rounded-full`}>
+        {orderStatus.label}
+      </span>
+    );
   };
 
   return (
@@ -137,6 +132,36 @@ function LookupContent() {
               {getStatusBadge(order.orderStatus)}
             </div>
           </div>
+
+          {normalizeOrderStatus(order.orderStatus) === 'cancelled' ? (
+            <div className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm font-semibold text-red-700">
+              Đơn hàng đã bị hủy.
+            </div>
+          ) : (
+            <ol className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+              {ORDER_STATUSES.filter(({ key }) => key !== 'cancelled').map((status, index, statuses) => {
+                const currentIndex = statuses.findIndex(
+                  ({ key }) => key === normalizeOrderStatus(order.orderStatus)
+                );
+                const isComplete = index <= currentIndex;
+
+                return (
+                  <li key={status.key} className="flex flex-col items-center gap-2 text-center">
+                    <span className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
+                      isComplete ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-400'
+                    }`}>
+                      {index + 1}
+                    </span>
+                    <span className={`text-[10px] font-bold ${
+                      isComplete ? 'text-slate-800' : 'text-slate-400'
+                    }`}>
+                      {status.label}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
 
           {/* Customer info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-600 bg-slate-50 p-4 rounded-2xl border border-slate-100">

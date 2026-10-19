@@ -4,6 +4,17 @@ import Order from '@/lib/models/DonHang';
 import Product from '@/lib/models/SanPham';
 import { getAdminSession } from '@/lib/xac-thuc';
 
+const ORDER_STATUSES = ['pending', 'ready_to_ship', 'shipping', 'delivered', 'completed', 'cancelled'];
+const NEXT_ORDER_STATUSES = {
+  pending: ['ready_to_ship', 'cancelled'],
+  confirmed: ['shipping', 'cancelled'],
+  ready_to_ship: ['shipping', 'cancelled'],
+  shipping: ['delivered'],
+  delivered: ['completed'],
+  completed: [],
+  cancelled: [],
+};
+
 export async function GET(req, { params }) {
   try {
     const session = await getAdminSession();
@@ -34,9 +45,21 @@ export async function PUT(req, { params }) {
     const { id } = await params;
     const body = await req.json();
 
+    if (body.orderStatus && !ORDER_STATUSES.includes(body.orderStatus)) {
+      return NextResponse.json({ success: false, message: 'Trạng thái đơn hàng không hợp lệ' }, { status: 400 });
+    }
+
     const order = await Order.findById(id);
     if (!order) {
       return NextResponse.json({ success: false, message: 'Không tìm thấy đơn hàng' }, { status: 404 });
+    }
+
+    if (
+      body.orderStatus &&
+      body.orderStatus !== order.orderStatus &&
+      !NEXT_ORDER_STATUSES[order.orderStatus]?.includes(body.orderStatus)
+    ) {
+      return NextResponse.json({ success: false, message: 'Không thể chuyển đơn hàng sang trạng thái này theo tiến trình hiện tại' }, { status: 400 });
     }
 
     // Check if status changes to 'cancelled'

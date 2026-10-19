@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Eye, Check, X, Clock, Truck, CheckCircle2, XCircle, Filter } from 'lucide-react';
 import { formatVND, formatDateTime } from '@/lib/tien-ich';
+import { ORDER_STATUSES, getNextOrderStatusKeys, getOrderStatus, normalizeOrderStatus } from '@/lib/trang-thai-don-hang';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -70,25 +71,35 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'pending':
-        return <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Chờ xác nhận</span>;
-      case 'confirmed':
-        return <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đã xác nhận</span>;
-      case 'preparing':
-        return <span className="bg-purple-100 text-purple-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đang chuẩn bị hàng</span>;
-      case 'shipping':
-        return <span className="bg-orange-100 text-orange-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đang giao hàng</span>;
-      case 'delivered':
-        return <span className="bg-teal-100 text-teal-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đã giao hàng</span>;
-      case 'completed':
-        return <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đã hoàn thành</span>;
-      case 'cancelled':
-        return <span className="bg-red-100 text-red-800 text-[10px] font-bold px-2.5 py-1 rounded-full">Đã hủy</span>;
-      default:
-        return status;
+  const handleUpdatePaymentStatus = async (orderId, newStatus) => {
+    try {
+      const res = await fetch(`/api/orders/${orderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentStatus: newStatus }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSelectedOrder(data.data);
+        fetchOrders();
+        showToast('Cập nhật trạng thái thanh toán thành công');
+      } else {
+        alert(data.message);
+      }
+    } catch (e) {
+      alert('Lỗi khi cập nhật trạng thái thanh toán');
     }
+  };
+
+  const getStatusBadge = (status) => {
+    const orderStatus = getOrderStatus(status);
+    if (!orderStatus) return status;
+
+    return (
+      <span className={`${orderStatus.badgeClass} text-[10px] font-bold px-2.5 py-1 rounded-full`}>
+        {orderStatus.label}
+      </span>
+    );
   };
 
   return (
@@ -124,7 +135,7 @@ export default function AdminOrdersPage() {
         {/* Trạng thái đơn hàng */}
         <div className="bg-white p-4 rounded-2xl border border-slate-200/80 flex items-center gap-2 flex-wrap overflow-x-auto flex-1">
           <span className="font-bold text-slate-500 shrink-0">Trạng thái đơn:</span>
-          {['all', 'pending', 'preparing', 'shipping', 'delivered', 'completed', 'cancelled'].map((st) => (
+          {['all', ...ORDER_STATUSES.map(({ key }) => key)].map((st) => (
             <button
               key={st}
               onClick={() => { setStatusFilter(st); setPage(1); }}
@@ -134,15 +145,7 @@ export default function AdminOrdersPage() {
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              {{
-                all: 'Tất cả',
-                pending: 'Chờ xác nhận',
-                preparing: 'Chuẩn bị hàng',
-                shipping: 'Giao hàng',
-                delivered: 'Giao hàng xong',
-                completed: 'Hoàn thành',
-                cancelled: 'Hủy',
-              }[st]}
+              {st === 'all' ? 'Tất cả' : getOrderStatus(st).label}
             </button>
           ))}
         </div>
@@ -182,26 +185,36 @@ export default function AdminOrdersPage() {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 uppercase text-[10px] font-bold">
+                  <th className="p-4">Ngày Đặt</th>
                   <th className="p-4">Mã Đơn</th>
                   <th className="p-4">Khách Hàng</th>
                   <th className="p-4">Số Điện Thoại</th>
                   <th className="p-4">Tổng Tiền</th>
                   <th className="p-4">Phương Thức</th>
+                  <th className="p-4">Thanh Toán</th>
                   <th className="p-4">Trạng Thái Đơn</th>
-                  <th className="p-4">Ngày Đặt</th>
                   <th className="p-4 text-right">Chi Tiết</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium">
                 {orders.map((o) => (
                   <tr key={o._id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="p-4 text-slate-400">{formatDateTime(o.createdAt)}</td>
                     <td className="p-4 font-mono font-bold text-[#10243A]">{o.orderCode}</td>
                     <td className="p-4 font-bold text-slate-800">{o.customerName}</td>
                     <td className="p-4 font-mono text-slate-600">{o.customerPhone}</td>
                     <td className="p-4 font-extrabold text-[#F97316]">{formatVND(o.totalAmount)}</td>
                     <td className="p-4 text-slate-600 font-bold">{o.paymentMethod}</td>
+                    <td className="p-4">
+                      <span className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-bold ${
+                        o.paymentStatus === 'paid'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-amber-100 text-amber-800'
+                      }`}>
+                        {o.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                      </span>
+                    </td>
                     <td className="p-4">{getStatusBadge(o.orderStatus)}</td>
-                    <td className="p-4 text-slate-400">{formatDateTime(o.createdAt)}</td>
                     <td className="p-4 text-right">
                       <button
                         onClick={() => setSelectedOrder(o)}
@@ -236,27 +249,59 @@ export default function AdminOrdersPage() {
             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
               <label className="font-bold text-slate-800 block">Cập Nhật Trạng Thái Đơn Hàng:</label>
               <div className="flex flex-wrap gap-2">
+                {ORDER_STATUSES.map((st) => {
+                  const isCurrent = normalizeOrderStatus(selectedOrder.orderStatus) === st.key;
+                  const canAdvance = getNextOrderStatusKeys(selectedOrder.orderStatus).includes(st.key);
+
+                  return (
+                    <button
+                      key={st.key}
+                      onClick={() => handleUpdateStatus(selectedOrder._id, st.key)}
+                      disabled={!canAdvance}
+                      className={`px-3 py-1.5 rounded-xl font-bold border transition-all ${
+                        isCurrent
+                          ? 'bg-[#10243A] text-white border-[#10243A]'
+                          : canAdvance
+                          ? 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
+                          : 'bg-slate-100 text-slate-400 border-slate-100 cursor-not-allowed'
+                      }`}
+                    >
+                      {st.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+              <label className="font-bold text-slate-800 block">Trạng Thái Thanh Toán:</label>
+              <div className="flex flex-wrap items-center gap-2">
                 {[
-                  { key: 'pending',   label: 'Chờ Xác Nhận' },
-                  { key: 'confirmed', label: 'Đã Xác Nhận' },
-                  { key: 'preparing', label: 'Đang Chuẩn Bị Hàng' },
-                  { key: 'shipping',  label: 'Đang Giao Hàng' },
-                  { key: 'delivered', label: 'Đã Giao Hàng' },
-                  { key: 'completed', label: 'Đã Hoàn Thành' },
-                  { key: 'cancelled', label: 'Đã Hủy (Hoàn Kho)' },
-                ].map((st) => (
-                  <button
-                    key={st.key}
-                    onClick={() => handleUpdateStatus(selectedOrder._id, st.key)}
-                    className={`px-3 py-1.5 rounded-xl font-bold border transition-all ${
-                      selectedOrder.orderStatus === st.key
-                        ? 'bg-[#10243A] text-white border-[#10243A]'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
-                    }`}
-                  >
-                    {st.label}
-                  </button>
-                ))}
+                  { key: 'pending', label: 'Chưa Thanh Toán', activeClass: 'bg-amber-100 text-amber-800 border-amber-200' },
+                  { key: 'paid', label: 'Đã Thanh Toán', activeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+                ].map((status) => {
+                  const isCurrent = selectedOrder.paymentStatus === status.key;
+
+                  return (
+                    <button
+                      key={status.key}
+                      onClick={() => handleUpdatePaymentStatus(selectedOrder._id, status.key)}
+                      disabled={isCurrent}
+                      className={`px-3 py-1.5 rounded-xl font-bold border transition-all ${
+                        isCurrent
+                          ? status.activeClass
+                          : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
+                      } ${isCurrent ? 'cursor-default' : 'cursor-pointer'}`}
+                    >
+                      {status.label}
+                    </button>
+                  );
+                })}
+                {!['pending', 'paid'].includes(selectedOrder.paymentStatus) && (
+                  <span className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-600">
+                    {selectedOrder.paymentStatus === 'refunded' ? 'Đã Hoàn Tiền' : 'Thanh Toán Thất Bại'}
+                  </span>
+                )}
               </div>
             </div>
 
