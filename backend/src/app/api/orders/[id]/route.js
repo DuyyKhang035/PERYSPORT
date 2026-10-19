@@ -83,6 +83,12 @@ export async function PUT(req, { params }) {
     if (body.paymentStatus) order.paymentStatus = body.paymentStatus;
     if (body.note !== undefined) order.note = body.note;
 
+    // Đơn đã thanh toán trước (không phải COD) khi giao xong thì tự hoàn tất
+    const isPrepaid = order.paymentMethod !== 'COD' || order.paymentStatus === 'paid';
+    if (order.orderStatus === 'delivered' && isPrepaid) {
+      order.orderStatus = 'completed';
+    }
+
     await order.save();
     return NextResponse.json({ success: true, message: 'Cập nhật trạng thái đơn hàng thành công', data: order });
   } catch (error) {
