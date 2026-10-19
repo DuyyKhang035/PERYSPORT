@@ -6,10 +6,11 @@ import {
   User, Mail, Phone, MapPin, Calendar, Edit3, Save, X,
   Lock, ShoppingBag, Store, LogOut, CheckCircle, AlertCircle, Loader2, Shield, Star,
 } from 'lucide-react';
+import { ORDER_STATUSES, normalizeOrderStatus } from '@/lib/trang-thai-don-hang';
 
 const GENDER_LABEL = { male: 'Nam', female: 'Nữ', other: 'Khác', '': 'Chưa cập nhật' };
-const ORDER_STATUS = { pending: 'Chờ xử lý', confirmed: 'Đã xác nhận', shipping: 'Đang giao', completed: 'Hoàn thành', cancelled: 'Đã hủy' };
-const ORDER_TABS = ['pending', 'confirmed', 'shipping', 'completed', 'cancelled'];
+const ORDER_STATUS = Object.fromEntries(ORDER_STATUSES.map(({ key, label }) => [key, label]));
+const ORDER_TABS = ORDER_STATUSES.map(({ key }) => key);
 const ROLE_LABEL = { user: 'Khách hàng', admin: 'Quản trị viên' };
 
 const CARD = { backgroundColor: '#141921' };
@@ -223,7 +224,7 @@ export default function ProfilePage() {
     { key: 'orders', label: 'Đơn hàng', icon: ShoppingBag },
     { key: 'password', label: 'Đổi mật khẩu', icon: Lock },
   ];
-  const visibleOrders = orders.filter((o) => o.orderStatus === orderTab);
+  const visibleOrders = orders.filter((o) => normalizeOrderStatus(o.orderStatus) === orderTab);
 
   return (
     <div className="min-h-screen font-sans" style={{ backgroundColor: '#0C0F14' }}>
@@ -515,6 +516,7 @@ export default function ProfilePage() {
                             );
                           })}
                         </div>
+
                       </div>
                     ))}
                   </div>

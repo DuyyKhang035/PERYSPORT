@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/tai-khoan';
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +34,7 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (data.success) {
-        router.push(data.redirect || '/tai-khoan');
+        router.push(data.redirect || redirectTo);
         router.refresh();
       } else {
         setError(data.message || 'Đăng nhập thất bại');

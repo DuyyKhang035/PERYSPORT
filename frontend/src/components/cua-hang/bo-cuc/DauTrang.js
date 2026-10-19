@@ -16,15 +16,21 @@ export default function Header() {
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [userName, setUserName] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const searchInputRef = useRef(null);
 
   useEffect(() => {
     fetch('/api/auth/me')
       .then((r) => r.json())
       .then((d) => {
-        if (d.success) setUserName(d.user.fullName || d.user.email);
+        if (d.success) {
+          setUserName(d.user.fullName || d.user.email);
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
       })
-      .catch(() => {});
+      .catch(() => { setIsLoggedIn(false); });
   }, []);
 
   useEffect(() => {
@@ -75,9 +81,15 @@ export default function Header() {
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/tai-khoan" className="hover:text-[#F97316] transition-colors flex items-center gap-1">
-              <User className="w-3 h-3" /> {userName || 'Tài khoản'}
-            </Link>
+            {isLoggedIn ? (
+              <Link href="/tai-khoan" className="hover:text-[#F97316] transition-colors flex items-center gap-1">
+                <User className="w-3 h-3" /> {userName}
+              </Link>
+            ) : (
+              <Link href="/dang-nhap" className="hover:text-[#F97316] transition-colors flex items-center gap-1 font-bold">
+                <User className="w-3 h-3" /> Đăng nhập
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -341,8 +353,12 @@ export default function Header() {
                 <Link href="/lien-he" onClick={() => setMobileMenuOpen(false)} className="block py-1 hover:text-[#F97316]">
                   Liên Hệ
                 </Link>
-                <Link href="/tai-khoan" onClick={() => setMobileMenuOpen(false)} className="block py-1 hover:text-[#F97316]">
-                  {userName || 'Tài khoản'}
+                <Link
+                  href={isLoggedIn ? '/tai-khoan' : '/dang-nhap'}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-1 hover:text-[#F97316] font-bold"
+                >
+                  {isLoggedIn ? (userName || 'Tài khoản') : 'Đăng nhập'}
                 </Link>
               </div>
             </nav>

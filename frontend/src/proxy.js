@@ -11,7 +11,10 @@ export function proxy(request) {
   // ── Trang đăng nhập chung (/dang-nhap) ─────────────────────────────────────
   if (pathname === '/dang-nhap') {
     if (adminToken) return NextResponse.redirect(new URL('/quan-tri', request.url));
-    if (userToken) return NextResponse.redirect(new URL('/tai-khoan', request.url));
+    if (userToken) {
+      const redirect = request.nextUrl.searchParams.get('redirect');
+      return NextResponse.redirect(new URL(redirect || '/tai-khoan', request.url));
+    }
     return NextResponse.next();
   }
 
@@ -41,17 +44,13 @@ export function proxy(request) {
     return NextResponse.next();
   }
 
-  // ── Bảo vệ tất cả trang Store & trang chủ ─────────────────────────────
-  const protectedPaths = ['/', '/san-pham', '/thuong-hieu', '/tin-tuc', '/gio-hang', '/thanh-toan', '/lien-he', '/tra-cuu', '/dat-hang-thanh-cong'];
-  const isProtected = protectedPaths.some(
-    (p) => pathname === p || pathname.startsWith(p + '/')
-  );
-
-  if (isProtected) {
-    if (!userToken) return NextResponse.redirect(new URL('/dang-nhap', request.url));
+  // ── Bảo vệ trang Thanh toán (chỉ bắt đăng nhập khi mua hàng) ──────────
+  if (pathname.startsWith('/thanh-toan') || pathname.startsWith('/dat-hang-thanh-cong')) {
+    if (!userToken) return NextResponse.redirect(new URL('/dang-nhap?redirect=' + encodeURIComponent(pathname), request.url));
     return NextResponse.next();
   }
 
+  // Các trang còn lại không yêu cầu đăng nhập
   return NextResponse.next();
 }
 
