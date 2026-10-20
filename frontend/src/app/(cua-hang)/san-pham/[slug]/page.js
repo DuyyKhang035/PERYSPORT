@@ -7,7 +7,6 @@ import Header from '@/components/cua-hang/bo-cuc/DauTrang';
 import Footer from '@/components/cua-hang/bo-cuc/ChanTrang';
 import CartDrawer from '@/components/cua-hang/gio-hang/NganKeGioHang';
 import ProductCard from '@/components/cua-hang/san-pham/TheSanPham';
-import HotDealCountdown from '@/components/cua-hang/trang-chu/DemNguocHotDeal';
 import { useCart } from '@/lib/ngu-canh-gio-hang';
 import { formatVND } from '@/lib/tien-ich';
 import { ShoppingBag, ShieldCheck, Truck, RotateCcw, Flame, Check, AlertTriangle, ArrowRight } from 'lucide-react';
@@ -230,13 +229,6 @@ export default function ProductDetailPage({ params }) {
                 </div>
               )}
             </div>
-
-            {/* Hot Deal Banner if active */}
-            {product.isPromoActive && product.promotion && (
-              <div className="p-3 bg-[#10243A] rounded-xl text-white">
-                <HotDealCountdown targetDate={product.promotion.endDate} />
-              </div>
-            )}
 
             {/* Error banner */}
             {errorMsg && (
