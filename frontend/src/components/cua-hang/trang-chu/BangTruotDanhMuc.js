@@ -5,6 +5,11 @@ import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function CategoryCarousel({ categories = [] }) {
+  // Sắp xếp danh mục theo thứ tự chữ cái tiếng Việt (A-Z)
+  const sortedCategories = React.useMemo(() => {
+    return [...categories].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'vi'));
+  }, [categories]);
+
   const trackRef = useRef(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
@@ -27,7 +32,7 @@ export default function CategoryCarousel({ categories = [] }) {
       el.removeEventListener('scroll', updateButtons);
       window.removeEventListener('resize', updateButtons);
     };
-  }, [categories]);
+  }, [sortedCategories]);
 
   const scroll = (dir) => {
     const el = trackRef.current;
@@ -38,7 +43,7 @@ export default function CategoryCarousel({ categories = [] }) {
     el.scrollBy({ left: dir === 'next' ? step * 2 : -step * 2, behavior: 'smooth' });
   };
 
-  if (categories.length === 0) return null;
+  if (sortedCategories.length === 0) return null;
 
   return (
     <div className="relative">
@@ -66,7 +71,7 @@ export default function CategoryCarousel({ categories = [] }) {
       >
         <style>{`.cat-track::-webkit-scrollbar { display: none; }`}</style>
 
-        {categories.map((cat) => (
+        {sortedCategories.map((cat) => (
           <Link
             key={cat._id}
             href={`/san-pham?category=${cat.slug}`}

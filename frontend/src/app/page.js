@@ -20,7 +20,7 @@ async function getHomepageData() {
     fetchBackend('/api/products?sort=best-selling&limit=8'),
     fetchBackend('/api/products?hotDeal=true&sort=discount-desc&limit=8'),
     fetchBackend('/api/brands?active=true&homepage=true'),
-    fetchBackend('/api/categories?active=true'),
+    fetchBackend('/api/categories?active=true&sort=name'),
     fetchBackend('/api/posts?status=published&limit=3'),
   ]);
 

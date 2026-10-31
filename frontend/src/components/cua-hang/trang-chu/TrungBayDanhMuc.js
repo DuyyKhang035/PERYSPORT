@@ -6,6 +6,11 @@ import { ChevronLeft, ChevronRight, Loader2, ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/cua-hang/san-pham/TheSanPham';
 
 export default function CategoryShowcase({ categories = [] }) {
+  // Sắp xếp danh mục theo thứ tự chữ cái tiếng Việt (A-Z)
+  const sortedCategories = React.useMemo(() => {
+    return [...categories].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'vi'));
+  }, [categories]);
+
   // null = "Tất Cả", hoặc category._id
   const [activeId, setActiveId] = useState(null);
   const [products, setProducts] = useState([]);
@@ -16,7 +21,7 @@ export default function CategoryShowcase({ categories = [] }) {
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
 
-  const activeCategory = categories.find((c) => c._id === activeId) || null;
+  const activeCategory = sortedCategories.find((c) => c._id === activeId) || null;
 
   /* ─── Fetch products khi tab thay đổi ─── */
   const fetchProducts = useCallback(async (categorySlug) => {
@@ -57,7 +62,7 @@ export default function CategoryShowcase({ categories = [] }) {
       el.removeEventListener('scroll', updateButtons);
       window.removeEventListener('resize', updateButtons);
     };
-  }, [categories, updateButtons]);
+  }, [sortedCategories, updateButtons]);
 
   const scroll = (dir) => {
     const el = trackRef.current;
@@ -67,7 +72,7 @@ export default function CategoryShowcase({ categories = [] }) {
     el.scrollBy({ left: dir === 'next' ? step * 3 : -step * 3, behavior: 'smooth' });
   };
 
-  if (categories.length === 0) return null;
+  if (sortedCategories.length === 0) return null;
 
   const viewAllHref = activeCategory
     ? `/san-pham?category=${activeCategory.slug}`
@@ -110,7 +115,7 @@ export default function CategoryShowcase({ categories = [] }) {
               className="flex gap-4 overflow-x-auto scroll-smooth"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              {categories.map((cat) => (
+              {sortedCategories.map((cat) => (
                 <button
                   key={cat._id}
                   onClick={() => setActiveId(cat._id)}

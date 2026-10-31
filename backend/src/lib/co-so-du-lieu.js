@@ -16,7 +16,7 @@ async function connectToDatabase() {
     const opts = {
       bufferCommands: false,
       dbName: 'pery_sport',
-      serverSelectionTimeoutMS: 3000,
+      serverSelectionTimeoutMS: 10000,
     };
 
     const targetUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/pery_sport';
@@ -24,7 +24,7 @@ async function connectToDatabase() {
     cached.promise = (async () => {
       try {
         const conn = await mongoose.connect(targetUri, opts);
-        console.log('Connected to MongoDB at:', targetUri);
+        console.log('Connected to MongoDB Atlas at:', targetUri.replace(/:([^@]+)@/, ':****@'));
         return conn;
       } catch (err) {
         console.warn('Target MongoDB instance unavailable. Starting MongoMemoryServer fallback...');

@@ -9,11 +9,22 @@ export async function GET(req) {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
     const active = searchParams.get('active');
+    const sortParam = searchParams.get('sort') || 'name';
 
     const query = {};
     if (active === 'true') query.isActive = true;
 
-    const categories = await Category.find(query).sort({ displayOrder: 1, name: 1 });
+    let categories;
+    if (sortParam === 'displayOrder') {
+      categories = await Category.find(query).sort({ displayOrder: 1, name: 1 });
+    } else {
+      categories = await Category.find(query)
+        .collation({ locale: 'vi', strength: 1 })
+        .sort({ name: 1 });
+      // Đảm bảo thứ tự theo bảng chữ cái tiếng Việt (A-Z)
+      categories = [...categories].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'vi'));
+    }
+
     return NextResponse.json({ success: true, data: categories });
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Lỗi máy chủ' }, { status: 500 });
