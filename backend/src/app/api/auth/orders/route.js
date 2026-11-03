@@ -20,7 +20,7 @@ export async function GET() {
     }
 
     const orders = await Order.find({ customerEmail: new RegExp(`^${user.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') })
-      .select('orderCode totalAmount orderStatus paymentStatus createdAt items cancelReason')
+      .select('orderCode totalAmount orderStatus paymentStatus paymentMethod createdAt items cancelReason')
       .sort({ createdAt: -1 })
       .limit(50)
       .lean();

@@ -128,7 +128,12 @@ function LookupContent() {
               <h3 className="text-lg font-black text-[#10243A] font-mono">{order.orderCode}</h3>
               <p className="text-[11px] text-slate-400 mt-0.5">Đặt lúc: {formatDateTime(order.createdAt)}</p>
             </div>
-            <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${
+                order.paymentStatus === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+              }`}>
+                {order.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+              </span>
               {getStatusBadge(order.orderStatus)}
             </div>
           </div>

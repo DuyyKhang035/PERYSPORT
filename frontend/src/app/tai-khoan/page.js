@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   User, Mail, Phone, MapPin, Calendar, Edit3, Save, X,
-  Lock, ShoppingBag, Store, LogOut, CheckCircle, AlertCircle, Loader2, Shield, Star, XCircle,
+  Lock, ShoppingBag, Store, LogOut, CheckCircle, AlertCircle, Loader2, Shield, Star, XCircle, CreditCard,
 } from 'lucide-react';
 import { ORDER_STATUSES, normalizeOrderStatus } from '@/lib/trang-thai-don-hang';
 
@@ -68,6 +68,7 @@ export default function ProfilePage() {
   const [reviews, setReviews] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [orderTab, setOrderTab] = useState('pending');
+  const [paymentFilter, setPaymentFilter] = useState('all');
   const [reviewing, setReviewing] = useState(null); // { orderId, productId, productName }
   const [reviewForm, setReviewForm] = useState({ rating: 0, comment: '' });
 
@@ -275,7 +276,16 @@ export default function ProfilePage() {
     { key: 'orders', label: 'Đơn hàng', icon: ShoppingBag },
     { key: 'password', label: 'Đổi mật khẩu', icon: Lock },
   ];
-  const visibleOrders = orders.filter((o) => normalizeOrderStatus(o.orderStatus) === orderTab);
+  const visibleOrders = orders.filter((o) => {
+    const matchStatus = normalizeOrderStatus(o.orderStatus) === orderTab;
+    const matchPayment =
+      paymentFilter === 'all'
+        ? true
+        : paymentFilter === 'paid'
+        ? o.paymentStatus === 'paid'
+        : o.paymentStatus !== 'paid';
+    return matchStatus && matchPayment;
+  });
 
   return (
     <div className="min-h-screen font-sans" style={{ backgroundColor: '#0C0F14' }}>
@@ -490,18 +500,52 @@ export default function ProfilePage() {
 
           {section === 'orders' && (
             <div className="space-y-4">
+              {/* Box Trạng Thái Đơn Hàng */}
               <div className="rounded-2xl p-3 flex gap-2 overflow-x-auto" style={CARD}>
                 {ORDER_TABS.map((t) => (
                   <button
                     key={t}
                     onClick={() => { setOrderTab(t); setReviewing(null); }}
-                    className="shrink-0 text-xs font-bold px-4 py-2 rounded-xl"
+                    className="shrink-0 text-xs font-bold px-4 py-2 rounded-xl transition-all"
                     style={{
                       backgroundColor: orderTab === t ? '#D17842' : '#0C0F14',
                       color: orderTab === t ? '#fff' : '#AEAEAE',
                     }}
                   >
                     {ORDER_STATUS[t]}
+                  </button>
+                ))}
+              </div>
+
+              {/* Box Trạng Thái Thanh Toán */}
+              <div className="rounded-2xl p-3 flex items-center gap-2 overflow-x-auto" style={CARD}>
+                <span className="text-xs font-bold shrink-0 px-2 flex items-center gap-1.5" style={{ color: '#AEAEAE' }}>
+                  <CreditCard className="w-3.5 h-3.5 text-[#D17842]" />
+                  Trạng thái thanh toán:
+                </span>
+                {[
+                  { key: 'all', label: 'Tất cả' },
+                  { key: 'unpaid', label: 'Chưa thanh toán' },
+                  { key: 'paid', label: 'Đã thanh toán' },
+                ].map((pt) => (
+                  <button
+                    key={pt.key}
+                    onClick={() => setPaymentFilter(pt.key)}
+                    className="shrink-0 text-xs font-bold px-3.5 py-1.5 rounded-xl transition-all"
+                    style={{
+                      backgroundColor:
+                        paymentFilter === pt.key
+                          ? pt.key === 'paid'
+                            ? '#059669'
+                            : pt.key === 'unpaid'
+                            ? '#DC2626'
+                            : '#D17842'
+                          : '#0C0F14',
+                      color: paymentFilter === pt.key ? '#fff' : '#AEAEAE',
+                      border: paymentFilter === pt.key ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    {pt.label}
                   </button>
                 ))}
               </div>
@@ -526,16 +570,30 @@ export default function ProfilePage() {
                             <p className="text-sm font-bold" style={{ color: '#D17842' }}>
                               {Number(o.totalAmount).toLocaleString('vi-VN')}đ
                             </p>
-                            <span
-                              className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
-                              style={
-                                o.paymentStatus === 'paid'
-                                  ? { backgroundColor: '#10B98120', color: '#10B981' }
-                                  : { backgroundColor: '#EF444420', color: '#F87171' }
-                              }
-                            >
-                              {o.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                            </span>
+                            <div className="flex items-center justify-end gap-1.5 mt-1.5 flex-wrap">
+                              {o.paymentMethod && (
+                                <span
+                                  className="text-[10px] font-semibold px-2 py-0.5 rounded-md"
+                                  style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: '#AEAEAE' }}
+                                >
+                                  {o.paymentMethod === 'BANK_TRANSFER' ? 'Chuyển khoản QR' : o.paymentMethod}
+                                </span>
+                              )}
+                              <span
+                                className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-md border"
+                                style={
+                                  o.paymentStatus === 'paid'
+                                    ? { backgroundColor: 'rgba(16, 185, 129, 0.15)', color: '#34D399', borderColor: 'rgba(16, 185, 129, 0.3)' }
+                                    : { backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#F87171', borderColor: 'rgba(239, 68, 68, 0.3)' }
+                                }
+                              >
+                                <span
+                                  className="w-1.5 h-1.5 rounded-full"
+                                  style={{ backgroundColor: o.paymentStatus === 'paid' ? '#34D399' : '#F87171' }}
+                                />
+                                {o.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                              </span>
+                            </div>
                           </div>
                         </div>
 
