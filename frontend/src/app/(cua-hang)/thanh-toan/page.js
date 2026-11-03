@@ -297,16 +297,6 @@ export default function CheckoutPage() {
                         <span className="font-bold text-slate-700">
                           {formData.customerPhone || currentAddress.phone}
                         </span>
-                        {currentAddress.isDefault && (
-                          <span className="text-[10px] font-bold text-[#F97316] bg-orange-100 border border-orange-200 px-2 py-0.5 rounded-md">
-                            Mặc định
-                          </span>
-                        )}
-                        {currentAddress.label && (
-                          <span className="text-[10px] font-semibold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
-                            {currentAddress.label}
-                          </span>
-                        )}
                       </div>
                       <p className="text-slate-600 text-xs leading-relaxed break-words font-medium">
                         {formData.shippingAddress || currentAddress.fullAddress}
