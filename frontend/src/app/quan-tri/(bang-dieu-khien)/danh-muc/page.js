@@ -152,8 +152,8 @@ export default function AdminCategoriesPage() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[#10243A]">Quản Lý Dòng Giày / Chức Năng</h1>
-          <p className="text-xs text-slate-500 mt-1">Quản lý các nhóm chức năng (Chạy bộ, Gym, Đi bộ, Bóng rổ, Thời trang...)</p>
+          <h1 className="text-2xl font-black text-[#10243A]">Quản Lý Danh Mục</h1>
+          <p className="text-xs text-slate-500 mt-1">Quản lý các danh mục sản phẩm (Chạy bộ, Gym, Đi bộ, Bóng rổ, Thời trang...)</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
@@ -185,7 +185,7 @@ export default function AdminCategoriesPage() {
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 uppercase text-[10px] font-bold">
                   <th className="p-4">Hình Ảnh</th>
-                  <th className="p-4">Tên Chức Năng</th>
+                  <th className="p-4">Tên Danh Mục</th>
                   <th className="p-4">Slug</th>
                   <th className="p-4">Thứ Tự</th>
                   <th className="p-4">Trạng Thái</th>
@@ -250,7 +250,7 @@ export default function AdminCategoriesPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="font-bold text-slate-700 block mb-1">Tên Danh Mục / Chức Năng (*)</label>
+                <label className="font-bold text-slate-700 block mb-1">Tên Danh Mục (*)</label>
                 <input
                   type="text"
                   required

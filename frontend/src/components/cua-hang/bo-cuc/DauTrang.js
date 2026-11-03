@@ -139,10 +139,10 @@ export default function Header() {
               </Link>
             </li>
 
-            {/* Giày Theo Chức Năng Dropdown */}
+            {/* Danh Mục Dropdown */}
             <li className="relative group py-2">
               <button className="flex items-center gap-1 hover:text-[#F97316] transition-colors cursor-pointer">
-                Giày Theo Chức Năng <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" />
+                Danh Mục <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition-transform" />
               </button>
               
               <div className="absolute top-full left-1/2 -translate-x-1/2 w-64 bg-white shadow-2xl rounded-2xl border border-slate-100 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
@@ -333,7 +333,7 @@ export default function Header() {
 
               {/* Mobile Categories Section */}
               <div className="border-t border-slate-100 pt-4">
-                <p className="text-xs uppercase text-slate-400 font-bold mb-2">Giày Theo Chức Năng</p>
+                <p className="text-xs uppercase text-slate-400 font-bold mb-2">Danh Mục</p>
                 {categories.map((cat) => (
                   <Link
                     key={cat._id}

@@ -203,13 +203,13 @@ function ProductCatalogContent() {
 
           {/* Category Filter */}
           <div>
-            <label className="text-xs font-bold text-slate-700 block mb-2">Dòng giày (Chức năng)</label>
+            <label className="text-xs font-bold text-slate-700 block mb-2">Danh mục</label>
             <select
               value={selectedCategory}
               onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
               className="w-full bg-slate-50 border border-slate-200 text-xs font-medium rounded-xl p-2.5 focus:outline-none"
             >
-              <option value="">Tất cả chức năng</option>
+              <option value="">Tất cả danh mục</option>
               {categories.map((c) => (
                 <option key={c._id} value={c.slug}>{c.name}</option>
               ))}
@@ -370,13 +370,13 @@ function ProductCatalogContent() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-2">Dòng giày</label>
+              <label className="text-xs font-bold text-slate-700 block mb-2">Danh mục</label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 text-xs rounded-xl p-2.5"
               >
-                <option value="">Tất cả chức năng</option>
+                <option value="">Tất cả danh mục</option>
                 {categories.map((c) => (
                   <option key={c._id} value={c.slug}>{c.name}</option>
                 ))}

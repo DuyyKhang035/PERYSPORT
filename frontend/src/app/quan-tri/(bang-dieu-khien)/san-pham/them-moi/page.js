@@ -303,7 +303,7 @@ export default function NewProductPage() {
         </div>
 
         <div>
-          <label className="font-bold text-slate-700 block mb-1">Dòng Giày / Chức Năng (Chọn nhiều)</label>
+          <label className="font-bold text-slate-700 block mb-1">Danh Mục (Chọn nhiều)</label>
           <div className="flex flex-wrap gap-2 pt-1">
             {categories.map((c) => {
               const checked = form.categories.includes(c._id);

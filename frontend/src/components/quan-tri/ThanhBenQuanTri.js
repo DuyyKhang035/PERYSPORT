@@ -22,7 +22,7 @@ export default function AdminSidebar({ isMobileOpen, setIsMobileOpen }) {
     { label: 'Quản Lý Đơn Hàng', href: '/quan-tri/don-hang', icon: ShoppingBag },
     { label: 'Quản Lý Sản Phẩm', href: '/quan-tri/san-pham', icon: Tag },
     { label: 'Thương Hiệu', href: '/quan-tri/thuong-hieu', icon: Layers },
-    { label: 'Danh Mục / Chức Năng', href: '/quan-tri/danh-muc', icon: Layers },
+    { label: 'Danh Mục', href: '/quan-tri/danh-muc', icon: Layers },
     { label: 'Khuyến Mãi & Deals', href: '/quan-tri/khuyen-mai', icon: Percent },
     { label: 'Hero Banners', href: '/quan-tri/banner', icon: ImageIcon },
     { label: 'Bài Viết & Blog', href: '/quan-tri/bai-viet', icon: FileText },
