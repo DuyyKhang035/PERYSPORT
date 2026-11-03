@@ -21,6 +21,8 @@ function ProductCatalogContent() {
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
 
+  const isHotDeal = searchParams.get('hotDeal') === 'true';
+
   // Active filters
   const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brand') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
@@ -29,7 +31,9 @@ function ProductCatalogContent() {
   const [selectedColor, setSelectedColor] = useState(searchParams.get('color') || '');
   const [selectedSize, setSelectedSize] = useState(searchParams.get('size') || '');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [sortOption, setSortOption] = useState(searchParams.get('sort') || 'newest');
+  const [sortOption, setSortOption] = useState(
+    searchParams.get('sort') || (searchParams.get('hotDeal') === 'true' ? 'discount-desc' : 'newest')
+  );
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1', 10));
 
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
@@ -44,7 +48,9 @@ function ProductCatalogContent() {
     setSelectedColor(searchParams.get('color') || '');
     setSelectedSize(searchParams.get('size') || '');
     setSearchQuery(searchParams.get('search') || '');
-    setSortOption(searchParams.get('sort') || 'newest');
+    setSortOption(
+      searchParams.get('sort') || (searchParams.get('hotDeal') === 'true' ? 'discount-desc' : 'newest')
+    );
     setCurrentPage(parseInt(searchParams.get('page') || '1', 10));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.toString()]);
@@ -75,6 +81,7 @@ function ProductCatalogContent() {
       setLoading(true);
       try {
         const params = new URLSearchParams();
+        if (isHotDeal) params.append('hotDeal', 'true');
         if (selectedBrand) params.append('brand', selectedBrand);
         if (selectedCategory) params.append('category', selectedCategory);
         if (minPrice) params.append('minPrice', minPrice);
@@ -101,7 +108,7 @@ function ProductCatalogContent() {
     }
 
     fetchProducts();
-  }, [selectedBrand, selectedCategory, minPrice, maxPrice, selectedColor, selectedSize, searchQuery, sortOption, currentPage]);
+  }, [isHotDeal, selectedBrand, selectedCategory, minPrice, maxPrice, selectedColor, selectedSize, searchQuery, sortOption, currentPage]);
 
   const resetFilters = () => {
     setSelectedBrand('');
@@ -111,9 +118,9 @@ function ProductCatalogContent() {
     setSelectedColor('');
     setSelectedSize('');
     setSearchQuery('');
-    setSortOption('newest');
+    setSortOption(isHotDeal ? 'discount-desc' : 'newest');
     setCurrentPage(1);
-    router.push('/san-pham');
+    router.push(isHotDeal ? '/san-pham?hotDeal=true' : '/san-pham');
   };
 
   const availableColors = ['Đen Navy', 'Cam Pery', 'Trắng Xám'];
@@ -124,9 +131,11 @@ function ProductCatalogContent() {
       {/* Title & Top Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-slate-200 gap-4 mb-8">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-[#10243A]">Sản Phẩm PERY SPORT</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-[#10243A]">
+            {isHotDeal ? '🔥 Hot Deals - Khuyến Mãi Sốc' : 'Sản Phẩm PERY SPORT'}
+          </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Hiển thị <strong>{pagination.total}</strong> sản phẩm giày thể thao nam chính hãng
+            Hiển thị <strong>{pagination.total}</strong> sản phẩm {isHotDeal ? 'đang có ưu đãi giảm giá tốt nhất' : 'giày thể thao nam chính hãng'}
           </p>
         </div>
 
@@ -147,9 +156,10 @@ function ProductCatalogContent() {
               onChange={(e) => { setSortOption(e.target.value); setCurrentPage(1); }}
               className="bg-white border border-slate-200 text-xs font-semibold text-slate-800 rounded-xl px-3 py-2 focus:outline-none focus:border-[#10243A]"
             >
+              <option value="discount-desc">% Giảm giá: Cao đến Thấp</option>
               <option value="newest">Mới nhất</option>
-              <option value="price-asc">Khuyến mãi: Thấp đến Cao</option>
-              <option value="price-desc">Khuyến mãi: Cao đến Thấp</option>
+              <option value="price-asc">Giá: Thấp đến Cao</option>
+              <option value="price-desc">Giá: Cao đến Thấp</option>
               <option value="best-selling">Bán chạy nhất</option>
             </select>
           </div>

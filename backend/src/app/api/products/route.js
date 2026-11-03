@@ -161,20 +161,31 @@ export async function GET(req) {
       };
     });
 
+    // Nếu là hotDeal: chỉ giữ các sản phẩm có % giảm giá thực tế > 0
+    let processedProducts = products;
+    if (hotDeal === 'true') {
+      processedProducts = processedProducts.filter((p) => (p.discountPercentage || 0) > 0);
+    }
+
     // Nếu là hotDeal hoặc sort=discount-desc: sắp xếp lại theo % giảm giá từ CAO xuống THẤP
     if (sortByDiscount) {
-      products.sort((a, b) => b.discountPercentage - a.discountPercentage);
+      processedProducts.sort((a, b) => {
+        const diff = (b.discountPercentage || 0) - (a.discountPercentage || 0);
+        if (diff !== 0) return diff;
+        return (b.soldCount || 0) - (a.soldCount || 0);
+      });
     }
-    const paginatedProducts = sortByDiscount ? products.slice(skip, skip + limit) : products;
+    const paginatedProducts = sortByDiscount ? processedProducts.slice(skip, skip + limit) : processedProducts;
+    const finalTotal = sortByDiscount ? processedProducts.length : total;
 
     return NextResponse.json({
       success: true,
       data: paginatedProducts,
       pagination: {
-        total,
+        total: finalTotal,
         page,
         limit,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(finalTotal / limit) || 1,
       },
     });
   } catch (error) {

@@ -37,6 +37,11 @@ async function getHomepageData() {
 export default async function HomePage() {
   const { banners, topSelling, hotDeals, brands, categories, posts } = await getHomepageData();
 
+  // Đảm bảo Hot Deals được sắp xếp theo phần trăm giảm giá từ cao đến thấp
+  const sortedHotDeals = [...hotDeals].sort(
+    (a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0)
+  );
+
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans">
       <Header />
@@ -50,13 +55,13 @@ export default async function HomePage() {
         <CategoryShowcase categories={categories} />
 
         {/* Hot Deals Section */}
-        {hotDeals.length > 0 && (
+        {sortedHotDeals.length > 0 && (
           <section className="py-14 bg-gradient-to-b from-[#10243A] to-[#0A1828] text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between pb-6 border-b border-slate-800 mb-8">
                 <h2 className="text-2xl md:text-3xl font-black text-white">Hot Deals</h2>
                 <Link
-                  href="/san-pham"
+                  href="/san-pham?hotDeal=true"
                   className="inline-flex items-center gap-1 bg-[#F97316] hover:bg-[#EA580C] text-white text-xs font-bold px-5 py-2.5 rounded-full transition-colors"
                 >
                   Xem thêm <ArrowRight className="w-4 h-4" />
@@ -64,7 +69,7 @@ export default async function HomePage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {hotDeals.map((product) => (
+                {sortedHotDeals.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))}
               </div>
