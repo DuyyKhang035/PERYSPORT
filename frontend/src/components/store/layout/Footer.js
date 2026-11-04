@@ -75,7 +75,7 @@ export default function Footer() {
           <div className="flex gap-6">
             <a href="#" className="hover:text-slate-300">Điều khoản sử dụng</a>
             <a href="#" className="hover:text-slate-300">Chính sách bảo mật</a>
-            <Link href="/admin/login" className="hover:text-[#F97316]">Hệ Thống Admin</Link>
+            <Link href="/admin" className="hover:text-[#F97316]">Hệ Thống Admin</Link>
           </div>
         </div>
       </div>

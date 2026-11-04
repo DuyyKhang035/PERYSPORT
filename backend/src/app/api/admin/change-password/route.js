@@ -22,9 +22,9 @@ export async function POST(req) {
       return NextResponse.json({ success: false, message: 'Mật khẩu mới phải từ 6 ký tự trở lên' }, { status: 400 });
     }
 
-    const admin = await Admin.findById(session.id);
+    const admin = (session.id && await Admin.findById(session.id).catch(() => null)) || await Admin.findOne({ username: 'admin' });
     if (!admin) {
-      return NextResponse.json({ success: false, message: 'Không tìm thấy tài khoản admin' }, { status: 44 });
+      return NextResponse.json({ success: false, message: 'Không tìm thấy tài khoản admin' }, { status: 404 });
     }
 
     const isMatch = await bcrypt.compare(currentPassword, admin.password);

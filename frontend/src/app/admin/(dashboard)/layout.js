@@ -7,41 +7,28 @@ import AdminHeader from '@/components/admin/AdminHeader';
 
 export default function AdminLayout({ children }) {
   const router = useRouter();
-  const [adminSession, setAdminSession] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [adminSession, setAdminSession] = useState({
+    username: 'admin',
+    name: 'Quản trị viên',
+    role: 'superadmin',
+  });
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
-    async function checkAuth() {
+    async function loadAdminInfo() {
       try {
         const res = await fetch('/api/admin/me');
         const data = await res.json();
         if (data.success && data.admin) {
           setAdminSession(data.admin);
-        } else {
-          router.push('/admin/login');
         }
       } catch (err) {
-        router.push('/admin/login');
-      } finally {
-        setLoading(false);
+        // Giữ thông tin admin mặc định
       }
     }
 
-    checkAuth();
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center font-sans text-xs font-bold text-slate-500">
-        Đang xác thực quyền truy cập Admin...
-      </div>
-    );
-  }
-
-  if (!adminSession) {
-    return null;
-  }
+    loadAdminInfo();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] flex font-sans">

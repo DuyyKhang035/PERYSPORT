@@ -10,10 +10,9 @@ export default function AdminSidebar({ isMobileOpen, setIsMobileOpen }) {
   const router = useRouter();
 
   const handleLogout = async () => {
-    if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi hệ thống Admin?')) {
-      await fetch('/api/admin/logout', { method: 'POST' });
-      router.push('/admin/login');
-      router.refresh();
+    if (confirm('Bạn có chắc chắn muốn rời khỏi Bảng Quản Trị để về Cửa Hàng?')) {
+      await fetch('/api/admin/logout', { method: 'POST' }).catch(() => {});
+      router.push('/');
     }
   };
 

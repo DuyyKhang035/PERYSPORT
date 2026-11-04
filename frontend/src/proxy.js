@@ -24,17 +24,13 @@ export function proxy(request) {
     return NextResponse.next();
   }
 
-  // ── Trang đăng nhập admin (/admin/login) ───────────────────────────────
+  // ── Chuyển hướng /admin/login thẳng vào /admin ─────────────────────────
   if (pathname === '/admin/login') {
-    if (adminToken) return NextResponse.redirect(new URL('/admin', request.url));
-    return NextResponse.next();
+    return NextResponse.redirect(new URL('/admin', request.url));
   }
 
-  // ── Bảo vệ trang Admin (trừ /admin/login) ──────────────────────────────
+  // ── Trang Admin truy cập trực tiếp không cần đăng nhập ─────────────────
   if (pathname.startsWith('/admin')) {
-    if (!adminToken) {
-      return NextResponse.redirect(new URL('/admin/login', request.url));
-    }
     return NextResponse.next();
   }
 

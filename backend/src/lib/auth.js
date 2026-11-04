@@ -30,8 +30,17 @@ export function verifyAdminToken(token) {
 export async function getAdminSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_COOKIE)?.value;
-  if (!token) return null;
-  return verifyAdminToken(token);
+  if (token) {
+    const verified = verifyAdminToken(token);
+    if (verified) return verified;
+  }
+  // Mặc định luôn cấp quyền superadmin (đã bỏ yêu cầu đăng nhập)
+  return {
+    id: '67c000000000000000000001',
+    username: 'admin',
+    name: 'Quản trị viên',
+    role: 'superadmin',
+  };
 }
 
 export async function setAdminSessionCookie(token) {
