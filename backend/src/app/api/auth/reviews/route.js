@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/co-so-du-lieu';
-import Order from '@/lib/models/DonHang';
-import Review from '@/lib/models/DanhGia';
-import User from '@/lib/models/NguoiDung';
-import { getUserSession } from '@/lib/xac-thuc';
+import connectToDatabase from '@/lib/database';
+import Order from '@/lib/models/Order';
+import Review from '@/lib/models/Review';
+import User from '@/lib/models/User';
+import { getUserSession } from '@/lib/auth';
 
 async function getActiveUser() {
   const session = await getUserSession();

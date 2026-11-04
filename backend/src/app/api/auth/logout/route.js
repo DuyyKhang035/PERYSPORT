@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { clearUserSessionCookie } from '@/lib/xac-thuc';
+import { clearUserSessionCookie } from '@/lib/auth';
 
 export async function POST() {
   await clearUserSessionCookie();

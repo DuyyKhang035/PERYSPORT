@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/co-so-du-lieu';
-import Banner from '@/lib/models/BannerQuangCao';
-import { getAdminSession } from '@/lib/xac-thuc';
+import connectToDatabase from '@/lib/database';
+import Banner from '@/lib/models/Banner';
+import { getAdminSession } from '@/lib/auth';
 
 export async function GET(req) {
   try {

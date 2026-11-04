@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/co-so-du-lieu';
-import Admin from '@/lib/models/QuanTri';
-import User from '@/lib/models/NguoiDung';
+import connectToDatabase from '@/lib/database';
+import Admin from '@/lib/models/Admin';
+import User from '@/lib/models/User';
 import bcrypt from 'bcryptjs';
-import { signAdminToken, setAdminSessionCookie, signUserToken, setUserSessionCookie } from '@/lib/xac-thuc';
+import { signAdminToken, setAdminSessionCookie, signUserToken, setUserSessionCookie } from '@/lib/auth';
 
 export async function POST(req) {
   try {

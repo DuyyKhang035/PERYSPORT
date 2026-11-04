@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAdminSession } from '@/lib/xac-thuc';
+import { getAdminSession } from '@/lib/auth';
 
 export async function GET() {
   const session = await getAdminSession();

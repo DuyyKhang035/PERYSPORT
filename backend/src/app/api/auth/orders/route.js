@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/co-so-du-lieu';
-import Order from '@/lib/models/DonHang';
-import User from '@/lib/models/NguoiDung';
-import Product from '@/lib/models/SanPham';
-import { getUserSession } from '@/lib/xac-thuc';
+import connectToDatabase from '@/lib/database';
+import Order from '@/lib/models/Order';
+import User from '@/lib/models/User';
+import Product from '@/lib/models/Product';
+import { getUserSession } from '@/lib/auth';
 
 // GET /api/auth/orders — lịch sử đơn hàng của chính user đang đăng nhập
 export async function GET() {

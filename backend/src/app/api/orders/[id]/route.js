@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/co-so-du-lieu';
-import Order from '@/lib/models/DonHang';
-import Product from '@/lib/models/SanPham';
-import { getAdminSession } from '@/lib/xac-thuc';
+import connectToDatabase from '@/lib/database';
+import Order from '@/lib/models/Order';
+import Product from '@/lib/models/Product';
+import { getAdminSession } from '@/lib/auth';
 
 const ORDER_STATUSES = ['pending', 'ready_to_ship', 'shipping', 'delivered', 'completed', 'cancelled'];
 const NEXT_ORDER_STATUSES = {

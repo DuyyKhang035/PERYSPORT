@@ -9,44 +9,44 @@ export function proxy(request) {
   const adminToken = request.cookies.get(ADMIN_COOKIE)?.value;
 
   // ── Trang đăng nhập chung (/dang-nhap) ─────────────────────────────────────
-  if (pathname === '/dang-nhap') {
-    if (adminToken) return NextResponse.redirect(new URL('/quan-tri', request.url));
+  if (pathname === '/login') {
+    if (adminToken) return NextResponse.redirect(new URL('/admin', request.url));
     if (userToken) {
       const redirect = request.nextUrl.searchParams.get('redirect');
-      return NextResponse.redirect(new URL(redirect || '/tai-khoan', request.url));
+      return NextResponse.redirect(new URL(redirect || '/account', request.url));
     }
     return NextResponse.next();
   }
 
   // ── Trang đăng ký (/dang-ky) ──────────────────────────────────────────
-  if (pathname === '/dang-ky') {
-    if (userToken) return NextResponse.redirect(new URL('/tai-khoan', request.url));
+  if (pathname === '/register') {
+    if (userToken) return NextResponse.redirect(new URL('/account', request.url));
     return NextResponse.next();
   }
 
-  // ── Trang đăng nhập admin (/quan-tri/dang-nhap) ───────────────────────────────
-  if (pathname === '/quan-tri/dang-nhap') {
-    if (adminToken) return NextResponse.redirect(new URL('/quan-tri', request.url));
+  // ── Trang đăng nhập admin (/admin/login) ───────────────────────────────
+  if (pathname === '/admin/login') {
+    if (adminToken) return NextResponse.redirect(new URL('/admin', request.url));
     return NextResponse.next();
   }
 
-  // ── Bảo vệ trang Admin (trừ /quan-tri/dang-nhap) ──────────────────────────────
-  if (pathname.startsWith('/quan-tri')) {
+  // ── Bảo vệ trang Admin (trừ /admin/login) ──────────────────────────────
+  if (pathname.startsWith('/admin')) {
     if (!adminToken) {
-      return NextResponse.redirect(new URL('/quan-tri/dang-nhap', request.url));
+      return NextResponse.redirect(new URL('/admin/login', request.url));
     }
     return NextResponse.next();
   }
 
   // ── Bảo vệ trang Profile ───────────────────────────────────────────────
-  if (pathname.startsWith('/tai-khoan')) {
-    if (!userToken) return NextResponse.redirect(new URL('/dang-nhap', request.url));
+  if (pathname.startsWith('/account')) {
+    if (!userToken) return NextResponse.redirect(new URL('/login', request.url));
     return NextResponse.next();
   }
 
   // ── Bảo vệ trang Thanh toán (chỉ bắt đăng nhập khi mua hàng) ──────────
-  if (pathname.startsWith('/thanh-toan') || pathname.startsWith('/dat-hang-thanh-cong')) {
-    if (!userToken) return NextResponse.redirect(new URL('/dang-nhap?redirect=' + encodeURIComponent(pathname), request.url));
+  if (pathname.startsWith('/checkout') || pathname.startsWith('/order-success')) {
+    if (!userToken) return NextResponse.redirect(new URL('/login?redirect=' + encodeURIComponent(pathname), request.url));
     return NextResponse.next();
   }
 

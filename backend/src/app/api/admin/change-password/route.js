@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/co-so-du-lieu';
-import Admin from '@/lib/models/QuanTri';
+import connectToDatabase from '@/lib/database';
+import Admin from '@/lib/models/Admin';
 import bcrypt from 'bcryptjs';
-import { getAdminSession } from '@/lib/xac-thuc';
+import { getAdminSession } from '@/lib/auth';
 
 export async function POST(req) {
   try {

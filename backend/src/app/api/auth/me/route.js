@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/co-so-du-lieu';
-import User from '@/lib/models/NguoiDung';
-import { getUserSession, clearUserSessionCookie } from '@/lib/xac-thuc';
+import connectToDatabase from '@/lib/database';
+import User from '@/lib/models/User';
+import { getUserSession, clearUserSessionCookie } from '@/lib/auth';
 
 export async function GET() {
   try {
