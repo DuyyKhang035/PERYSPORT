@@ -8,6 +8,7 @@ import Footer from '@/components/store/layout/Footer';
 import CartDrawer from '@/components/store/cart/CartDrawer';
 import ProductCard from '@/components/store/product/ProductCard';
 import { useCart } from '@/lib/cart-context';
+import { formatVND } from '@/lib/utils';
 import { ShoppingBag, ShieldCheck, Truck, RotateCcw, Flame, Check, AlertTriangle, ArrowRight } from 'lucide-react';
 import YeuCauDangNhapModal from '@/components/store/LoginRequiredModal';
 

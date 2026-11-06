@@ -23,7 +23,7 @@ export default function AdminSidebar({ isMobileOpen, setIsMobileOpen }) {
     { label: 'Thương Hiệu', href: '/admin/brands', icon: Layers },
     { label: 'Danh Mục', href: '/admin/categories', icon: Layers },
     { label: 'Khuyến Mãi & Deals', href: '/admin/promotions', icon: Percent },
-    { label: 'Hero Banners', href: '/admin/banners', icon: ImageIcon },
+    { label: 'Banner Trang Chủ', href: '/admin/banners', icon: ImageIcon },
     { label: 'Bài Viết & Blog', href: '/admin/posts', icon: FileText },
     { label: 'Tài Khoản & Mật Khẩu', href: '/admin/settings', icon: Settings },
   ];

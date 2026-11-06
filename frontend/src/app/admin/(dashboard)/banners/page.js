@@ -1,42 +1,47 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Check, X, Upload, Image as ImageIcon } from 'lucide-react';
+import { Check, Upload, Image as ImageIcon, Save, RotateCcw, ExternalLink, Loader2, Sparkles } from 'lucide-react';
 
 export default function AdminBannersPage() {
-  const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingBanner, setEditingBanner] = useState(null);
-  const [form, setForm] = useState({
-    title: '',
-    description: '',
-    desktopImage: '',
-    mobileImage: '',
-    ctaText: 'Khám Phá Ngay',
-    ctaLink: '/products',
-    displayOrder: 0,
-    isActive: true,
-  });
+  const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [toast, setToast] = useState('');
 
-  const fetchBanners = async () => {
+  // Banner State (Chỉ quản lý đúng 1 banner duy nhất của trang chủ)
+  const [bannerId, setBannerId] = useState(null);
+  const [desktopImage, setDesktopImage] = useState('/banneruutien.png');
+  const [title, setTitle] = useState('PERY SPORT - Đỉnh Cao Thể Thao Nam');
+  const [description, setDescription] = useState('Khám phá các dòng giày thể thao nam cao cấp tại PERY SPORT.');
+  const [isActive, setIsActive] = useState(true);
+
+  const fetchBanner = async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/banners');
       const data = await res.json();
-      if (data.success) setBanners(data.data);
+      if (data.success && data.data && data.data.length > 0) {
+        const b = data.data[0];
+        setBannerId(b._id);
+        setDesktopImage(b.desktopImage || '/banneruutien.png');
+        setTitle(b.title || 'PERY SPORT - Đỉnh Cao Thể Thao Nam');
+        setDescription(b.description || '');
+        setIsActive(b.isActive !== undefined ? b.isActive : true);
+      } else {
+        // Mặc định ban đầu dùng ảnh trang chủ hiện tại
+        setBannerId(null);
+        setDesktopImage('/banneruutien.png');
+      }
     } catch (e) {
-      console.error(e);
+      console.error('Lỗi tải banner:', e);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchBanners();
+    fetchBanner();
   }, []);
 
   const showToast = (msg) => {
@@ -44,36 +49,8 @@ export default function AdminBannersPage() {
     setTimeout(() => setToast(''), 3000);
   };
 
-  const handleOpenModal = (b = null) => {
-    if (b) {
-      setEditingBanner(b);
-      setForm({
-        title: b.title,
-        description: b.description || '',
-        desktopImage: b.desktopImage,
-        mobileImage: b.mobileImage || b.desktopImage,
-        ctaText: b.ctaText || 'Khám Phá Ngay',
-        ctaLink: b.ctaLink || '/products',
-        displayOrder: b.displayOrder || 0,
-        isActive: b.isActive,
-      });
-    } else {
-      setEditingBanner(null);
-      setForm({
-        title: '',
-        description: '',
-        desktopImage: '',
-        mobileImage: '',
-        ctaText: 'Khám Phá Ngay',
-        ctaLink: '/products',
-        displayOrder: 0,
-        isActive: true,
-      });
-    }
-    setIsModalOpen(true);
-  };
-
-  const handleImageUpload = async (e, field) => {
+  // Upload ảnh mới từ thiết bị
+  const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -85,239 +62,262 @@ export default function AdminBannersPage() {
       const data = await res.json();
 
       if (data.success) {
-        setForm((prev) => ({ ...prev, [field]: data.url }));
-        showToast('Tải ảnh banner thành công');
+        setDesktopImage(data.url);
+        showToast('Đã tải ảnh banner lên thành công');
       } else {
-        alert(data.message);
+        alert(data.message || 'Lỗi tải ảnh');
       }
     } catch (err) {
-      alert('Lỗi tải ảnh');
+      alert('Lỗi tải ảnh lên máy chủ');
     } finally {
       setUploading(false);
     }
   };
 
+  // Khôi phục lại ảnh mặc định ban đầu
+  const handleResetDefault = () => {
+    if (confirm('Khôi phục về ảnh banner mặc định (/banneruutien.png)?')) {
+      setDesktopImage('/banneruutien.png');
+      showToast('Đã chuyển về ảnh banner mặc định');
+    }
+  };
+
+  // Lưu Banner vào cơ sở dữ liệu
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
-      const url = editingBanner ? `/api/banners/${editingBanner._id}` : '/api/banners';
-      const method = editingBanner ? 'PUT' : 'POST';
+      const payload = {
+        title: title || 'PERY SPORT Banner',
+        description,
+        desktopImage: desktopImage || '/banneruutien.png',
+        mobileImage: desktopImage || '/banneruutien.png',
+        ctaText: 'Khám Phá Ngay',
+        ctaLink: '/products',
+        displayOrder: 0,
+        isActive,
+      };
+
+      const url = bannerId ? `/api/banners/${bannerId}` : '/api/banners';
+      const method = bannerId ? 'PUT' : 'POST';
 
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
       if (data.success) {
-        setIsModalOpen(false);
-        fetchBanners();
-        showToast(editingBanner ? 'Cập nhật banner thành công' : 'Tạo mới banner thành công');
+        if (!bannerId && data.data?._id) {
+          setBannerId(data.data._id);
+        }
+        showToast('Cập nhật Banner Trang Chủ thành công!');
       } else {
-        alert(data.message);
+        alert(data.message || 'Lỗi khi lưu banner');
       }
     } catch (e) {
-      alert('Lỗi lưu banner');
+      alert('Lỗi kết nối máy chủ');
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (confirm('Bạn có chắc chắn muốn xóa banner này?')) {
-      try {
-        const res = await fetch(`/api/banners/${id}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (data.success) {
-          fetchBanners();
-          showToast('Đã xóa banner');
-        } else {
-          alert(data.message);
-        }
-      } catch (e) {
-        alert('Lỗi khi xóa');
-      }
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 space-y-3">
+        <Loader2 className="w-8 h-8 animate-spin text-[#10243A]" />
+        <p className="text-xs text-slate-500 font-semibold">Đang tải dữ liệu Banner Trang Chủ...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-5xl mx-auto pb-12">
+      {/* Toast thông báo */}
       {toast && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#10243A] text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2 animate-bounce">
           <Check className="w-4 h-4 text-emerald-400" /> {toast}
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header trang */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-black text-[#10243A]">Quản Lý Hero Banner Slider</h1>
-          <p className="text-xs text-slate-500 mt-1">Ảnh bìa trang chủ, tiêu đề, mô tả và đường dẫn nút bấm CTA</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-black text-[#10243A]">Quản Lý Banner Trang Chủ</h1>
+            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+              <Sparkles className="w-3 h-3" /> Đang Áp Dụng
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Chỉnh sửa duy nhất một hình ảnh bìa chính hiển thị trên đỉnh đầu của Trang Chủ PERY SPORT.
+          </p>
         </div>
-        <button
-          onClick={() => handleOpenModal()}
-          className="bg-[#10243A] hover:bg-[#F97316] text-white text-xs font-extrabold px-5 py-3 rounded-xl transition-colors flex items-center gap-2 shadow-md shrink-0"
+
+        <a
+          href="/"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-[#10243A] hover:text-white text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-xs shrink-0"
         >
-          <Plus className="w-4 h-4" /> Thêm Banner Mới
-        </button>
+          <span>Xem Trang Chủ</span>
+          <ExternalLink className="w-3.5 h-3.5" />
+        </a>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {banners.map((b) => (
-          <div key={b._id} className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs space-y-4 p-5 flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="aspect-16/9 bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
-                <img src={b.desktopImage} alt={b.title} className="w-full h-full object-cover" />
-              </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Khung Xem Trước Banner Trang Chủ */}
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-black text-[#10243A] flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-[#F97316]" />
+              Hình Ảnh Banner Hiện Tại Trên Trang Chủ
+            </h2>
+            <span className="text-[11px] text-slate-400 font-medium">
+              Khuyến nghị: Tỉ lệ 16:9 hoặc 21:9 (ảnh ngang sắc nét)
+            </span>
+          </div>
 
-              <div>
-                <span className="text-[10px] text-slate-400 font-bold block">Thứ tự: {b.displayOrder}</span>
-                <h3 className="text-base font-black text-[#10243A] line-clamp-1">{b.title}</h3>
-                <p className="text-xs text-slate-500 line-clamp-2 mt-1">{b.description}</p>
-              </div>
+          {/* Banner Preview Frame */}
+          <div className="relative w-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-200 aspect-16/9 md:aspect-21/9 shadow-inner group">
+            <img
+              src={desktopImage}
+              alt={title}
+              className="w-full h-full object-cover object-center transition-all duration-300"
+            />
+            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+
+            {/* Label watermark preview */}
+            <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-bold px-3 py-1 rounded-full border border-white/20">
+              Live Preview: Trang Chủ
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-              <div>
-                {b.isActive ? (
-                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">Hiển thị</span>
-                ) : (
-                  <span className="bg-slate-100 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full">Ẩn</span>
-                )}
-              </div>
-
-              <div className="space-x-2">
-                <button
-                  onClick={() => handleOpenModal(b)}
-                  className="p-2 text-slate-600 hover:text-[#10243A] hover:bg-slate-100 rounded-lg transition-colors inline-block"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(b._id)}
-                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors inline-block"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
+            <div className="absolute bottom-4 right-4 bg-slate-900/80 backdrop-blur-xs text-white text-[11px] font-medium px-3 py-1 rounded-full border border-white/20">
+              URL: {desktopImage}
             </div>
           </div>
-        ))}
-      </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-base font-black text-[#10243A]">
-                {editingBanner ? 'Chỉnh Sửa Banner' : 'Thêm Banner Mới'}
-              </h3>
-              <button onClick={() => setIsModalOpen(false)} className="p-1 text-slate-400 hover:text-slate-700">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+          {/* Nút thao tác nhanh với ảnh */}
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <label className="bg-[#10243A] hover:bg-[#F97316] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer inline-flex items-center gap-2 shadow-xs">
+              {uploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Đang tải ảnh...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4" />
+                  <span>Tải Ảnh Mới Lên Từ Máy Tính</span>
+                </>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </label>
 
-            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Tiêu Đề Banner (*)</label>
-                <input
-                  type="text"
-                  required
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="VD: PERY SPORT - ĐỈNH CAO THỂ THAO NAM"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-[#10243A]"
-                />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Mô Tả Ngắn</label>
-                <textarea
-                  rows={2}
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Ảnh Desktop URL (*)</label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    required
-                    value={form.desktopImage}
-                    onChange={(e) => setForm({ ...form, desktopImage: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none"
-                  />
-                  <label className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl cursor-pointer flex items-center gap-1 font-bold shrink-0">
-                    <Upload className="w-4 h-4" />
-                    <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'desktopImage')} className="hidden" />
-                  </label>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Nút Nút Bấm (CTA)</label>
-                  <input
-                    type="text"
-                    value={form.ctaText}
-                    onChange={(e) => setForm({ ...form, ctaText: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Đường Dẫn Link</label>
-                  <input
-                    type="text"
-                    value={form.ctaLink}
-                    onChange={(e) => setForm({ ...form, ctaLink: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Thứ Tự Bán Hiển Thị</label>
-                  <input
-                    type="number"
-                    value={form.displayOrder}
-                    onChange={(e) => setForm({ ...form, displayOrder: parseInt(e.target.value, 10) || 0 })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none"
-                  />
-                </div>
-                <div className="pt-6">
-                  <label className="flex items-center gap-2 font-bold text-slate-700 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={form.isActive}
-                      onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-                      className="accent-[#F97316] w-4 h-4"
-                    />
-                    Hoạt Động
-                  </label>
-                </div>
-              </div>
-
-              <div className="pt-4 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="w-1/2 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl"
-                >
-                  Hủy
-                </button>
-                <button
-                  type="submit"
-                  className="w-1/2 py-3 bg-[#10243A] hover:bg-[#F97316] text-white font-bold rounded-xl transition-colors"
-                >
-                  Lưu Banner
-                </button>
-              </div>
-            </form>
+            <button
+              type="button"
+              onClick={handleResetDefault}
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-colors inline-flex items-center gap-1.5"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+              <span>Khôi Phục Ảnh Gốc (/banneruutien.png)</span>
+            </button>
           </div>
         </div>
-      )}
+
+        {/* Cấu hình chi tiết */}
+        <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+          <h2 className="text-sm font-black text-[#10243A] pb-2 border-b border-slate-100">
+            Thông Tin Chi Tiết Banner
+          </h2>
+
+          <div className="space-y-4 text-xs">
+            <div>
+              <label className="font-bold text-slate-700 block mb-1.5">
+                Đường Dẫn Ảnh Desktop URL (*)
+              </label>
+              <input
+                type="text"
+                required
+                value={desktopImage}
+                onChange={(e) => setDesktopImage(e.target.value)}
+                placeholder="/banneruutien.png hoặc link https://..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-[#10243A] font-mono"
+              />
+              <p className="text-[11px] text-slate-400 mt-1">
+                Bạn có thể bấm nút "Tải Ảnh Mới Lên" ở trên hoặc dán trực tiếp đường dẫn ảnh vào ô này.
+              </p>
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-700 block mb-1.5">
+                Tiêu Đề Banner (*)
+              </label>
+              <input
+                type="text"
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="VD: PERY SPORT - ĐỈNH CAO THỂ THAO NAM"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-[#10243A]"
+              />
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-700 block mb-1.5">
+                Mô Tả Banner
+              </label>
+              <textarea
+                rows={2}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Mô tả tóm tắt..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-[#10243A]"
+              />
+            </div>
+
+            <div className="pt-2">
+              <label className="flex items-center gap-2 font-bold text-slate-700 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isActive}
+                  onChange={(e) => setIsActive(e.target.checked)}
+                  className="accent-[#F97316] w-4 h-4 rounded"
+                />
+                <span>Kích hoạt hiển thị Banner này trên Trang Chủ</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Nút lưu thay đổi */}
+        <div className="flex items-center justify-end gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={saving || uploading}
+            className="bg-[#10243A] hover:bg-[#F97316] text-white text-sm font-extrabold px-8 py-3.5 rounded-2xl transition-all shadow-md hover:shadow-xl inline-flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+          >
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Đang Lưu Banner...</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>Lưu Cập Nhật Banner Trang Chủ</span>
+              </>
+            )}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

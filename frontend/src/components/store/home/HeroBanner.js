@@ -6,6 +6,11 @@ import { useRouter } from 'next/navigation';
 export default function HeroBanner({ initialBanners = [] }) {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Lấy ảnh banner duy nhất từ Admin, fallback về /banneruutien.png mặc định nếu chưa cài đặt
+  const activeBanner = initialBanners && initialBanners.length > 0 ? initialBanners[0] : null;
+  const bannerImage = activeBanner?.desktopImage || '/banneruutien.png';
+  const bannerTitle = activeBanner?.title || 'PERY SPORT Banner';
   const [routes, setRoutes] = useState([
     '/',
     '/products',
@@ -60,8 +65,8 @@ export default function HeroBanner({ initialBanners = [] }) {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/Bannermoipng.png"
-            alt="PERY SPORT Banner"
+            src={bannerImage}
+            alt={bannerTitle}
             className="w-full h-full object-cover object-center transition-all duration-700"
           />
         </div>
